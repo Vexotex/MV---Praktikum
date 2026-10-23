@@ -2,7 +2,7 @@
 
 # MQTT-Broker
 BROKER_HOST = "dover.init.th-owl.de"
-BROKER_PORT = 1884
+BROKER_PORT = 1884 # wichtig! nicht standard MQTT Port
 USER = "dover_python"
 PASSWORD = "inIT2025!" 
 
