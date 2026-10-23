@@ -1,0 +1,10 @@
+Nodered:
+http://nodered.init.th-owl.de:188x
+
+MQTT-Broker:
+dover.init.th-owl.de:1884
+User: mv_praktikum
+Passwort: mv_2526
+
+VariablenDoku
+http://executor.init.th-owl.de/mv2526
