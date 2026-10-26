@@ -1,26 +1,29 @@
 """Dünner Wrapper um den MQTT-Client."""
+import config
+from paho.mqtt.client import Client
 
 
 class MqttVerbindung:
     """Kapselt Verbindung, Publish und Subscribe zum Broker."""
 
-    def __init__(self, host: str, port: int):
-        self.host = host
-        self.port = port
-        # TODO: paho-mqtt Client anlegen
+    def __init__(self):
+        # initalize the mqtt_client and its function
+        self.mqtt_client = Client()
+        self.mqtt_client.on_connect = self.on_connect
+        self.mqtt_client.on_connect_fail = self.on_connect_fail
+        self.mqtt_client.on_message = self.on_message
 
-    def verbinden(self):
-        # TODO
-        pass
+        # start the connection
+        self.mqtt_client.connect(
+            config.BROKER_HOST,
+            config.BROKER_PORT
+            )
 
-    def trennen(self):
-        # TODO
-        pass
+    def on_connect(self):
+        return self.mqtt_client
 
-    def senden(self, topic: str, nachricht: str):
-        # TODO
-        pass
+    def on_connect_fail(self):
+        return None
 
-    def abonnieren(self, topic: str, callback):
-        # TODO
-        pass
+    def on_message(self):
+        

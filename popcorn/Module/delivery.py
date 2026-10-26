@@ -3,7 +3,7 @@
 from popcorn.komponenten import Foerderband, Fuelltrichter
 
 
-class Modul:
+class Delivery:
     """Fasst alle Komponenten zusammen und verteilt eingehende MQTT-Nachrichten."""
 
     def __init__(self, verbindung):

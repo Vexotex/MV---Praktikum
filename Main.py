@@ -1,12 +1,16 @@
-from popcorn import config
-from popcorn.modul import Modul
+from popcorn.Module.delivery import Delivery
 from popcorn.mqtt_verbindung import MqttVerbindung
 from popcorn.zustandsautomat import Zustandsautomat
 
 
 def main():
-    verbindung = MqttVerbindung(config.BROKER_HOST, config.BROKER_PORT)
-    modul = Modul(verbindung)
+    
+    mqtt_verbindung = MqttVerbindung()
+    # Falls Verbindung aufgebaut werden konnte
+    if mqtt_verbindung == None:
+        return
+    
+    modul = Delivery(mqtt_verbindung)
     automat = Zustandsautomat(modul)
 
     # TODO: verbinden, Modul starten, Automat in Schleife laufen lassen
