@@ -29,7 +29,7 @@ class Delivery:
         self.fuelltrichter.bottom = payload_value
 
     def update_funnel(self, payload_value):
-        self.funnel = payload_value
+        self.abtransport.funnel = payload_value
 
     def update_emergency(self, payload_value):
         self.emergency = payload_value
