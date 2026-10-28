@@ -33,3 +33,15 @@ class Foerderband(Komponente):
         # TODO: Attribute, z.B. laeuft
 
     # TODO: Befehle, z.B. starten() / stoppen()
+
+class Abtransport(Komponente):
+    def __init__(self, name, verbindung):
+        super().__init__(name, verbindung)
+        self.air = False
+        self.funnel = False
+
+    def start_air(self):
+        pass
+
+    def stop_air(self):
+        pass
