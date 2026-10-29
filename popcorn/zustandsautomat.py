@@ -4,11 +4,12 @@ from enum import Enum, auto
 
 
 class Zustand(Enum):
-    # TODO: echte Zustände festlegen
-    INIT = auto()
+    INIT = auto() # PON
     BEREIT = auto()
     LAEUFT = auto()
+    Nachlauf = auto()
     FEHLER = auto()
+    Vorlauf = auto()
 
 
 class Zustandsautomat:
