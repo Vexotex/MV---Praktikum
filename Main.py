@@ -2,6 +2,7 @@ from popcorn.Module.delivery import Delivery
 from popcorn.mqtt_verbindung import MqttVerbindung
 from popcorn.zustandsautomat import Zustandsautomat
 
+intervall = 0.1
 
 def main():
     modul = Delivery()
@@ -12,9 +13,11 @@ def main():
         return
 
     modul.set_mqtt(mqtt_verbindung)
-    automat = Zustandsautomat(modul)
+    automat = Zustandsautomat(modul, intervall)
 
-    # TODO: verbinden, Modul starten, Automat in Schleife laufen lassen
+    while True:
+        automat.schritt()
+        time.sleep(intervall)
 
 
 if __name__ == "__main__":
