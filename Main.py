@@ -1,8 +1,7 @@
+from popcorn.config import intervall
 from popcorn.Module.delivery import Delivery
 from popcorn.mqtt_verbindung import MqttVerbindung
 from popcorn.zustandsautomat import Zustandsautomat
-
-intervall = 0.1
 
 def main():
     modul = Delivery()

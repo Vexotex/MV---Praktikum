@@ -13,3 +13,6 @@ TOPIC_PREFIX_DELIVERY_ACTORS = "MV/VPS/Delivery/Transport/"
 
 TOPIC_PREFIX_STORAGE_SENSORS = "MV/VPS/Sensors/Storage/"
 TOPIC_PREFIX_STORAGE_ACTORS = "MV/VPS/Storage/Transport/"
+
+# konstanten
+intervall = 0.1 # des Zustandsautomaten
