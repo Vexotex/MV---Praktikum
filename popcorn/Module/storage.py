@@ -1,7 +1,7 @@
 """Das Modul der Anlage: besitzt die Komponenten."""
 
 from popcorn.komponenten import Ruettler, Silo, Abtransport
-import config
+from popcorn import config
 
 
 class Delivery:
