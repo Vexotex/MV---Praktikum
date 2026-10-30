@@ -1,35 +1,72 @@
 """Das Modul der Anlage: besitzt die Komponenten."""
 
-from popcorn.komponenten import Foerderband, Fuelltrichter, Abtransport
+from popcorn.komponenten import Foerderband, Silo, Abtransport
+import config
 
 
 class Delivery:
     """Fasst alle Komponenten zusammen und verteilt eingehende MQTT-Nachrichten."""
 
     def __init__(self):
-        self.fuelltrichter = Fuelltrichter("fuelltrichter")
-        self.foerderband = Foerderband("foerderband")
-        self.abtransport = Abtransport("abtransport")
-        # TODO: weitere Komponenten
-        # TODO: Schnittstellen zu den Nachbarmodulen (siehe schnittstellen.py)
+
+        # import mqtt_topics for Module from Config
+        self.TOPIC_PREFIX_SENSORS = config.TOPIC_PREFIX_DELIVERY_SENSORS
+        self.TOPIC_PREFIX_ACTORS = config.TOPIC_PREFIX_DELIVERY_ACTORS
+
+        # initialise Components
+        self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
+        self.foerderband = Foerderband("foerderband", self.TOPIC_PREFIX_ACTORS)
+        self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
+
 
     def set_mqtt(self, mqtt_verbindung):
-        """Verbindet Delivery mit der MQTT-Schnittstelle."""
+        """Verbindet Delivery und Komponenten mit der MQTT-Schnittstelle."""
         self.mqtt = mqtt_verbindung
+        self.silo.set_mqtt(mqtt_verbindung)
+        self.foerderband.set_mqtt(mqtt_verbindung)
+        self.abtransport.set_mqtt(mqtt_verbindung)
 
     def starten(self):
-        """Topics aller Komponenten abonnieren."""
         # TODO
         pass
 
-    def update_top(self, payload_value):
-        self.fuelltrichter.top = payload_value
+    def on_message(self, msg):
+        
+        value = self.decode_bool(msg.payload)
 
-    def update_bottom(self, payload_value):
-        self.fuelltrichter.bottom = payload_value
+        # Silo Top, type=bool, default=true
+        if msg.topic.endswith("Top"):
+            self.silo.sensor_top = value
 
-    def update_funnel(self, payload_value):
-        self.abtransport.funnel = payload_value
+        # Silo Bottom, type=bool, default=true
+        elif msg.topic.endswith("Bottom"):
+            self.silo.sensor_bottom = value
 
-    def update_emergency(self, payload_value):
-        self.emergency = payload_value
+        # Trichter an Schlauch, type=bool, default=false
+        elif msg.topic.endswith("Funnel"):
+            self.abtransport.funnel = value
+            
+        # NOT-AUS, type=bool, default=true
+        elif msg.topic.endswith("Emergency"):
+            self.emergency = value
+
+        # NOT-AUS Modul 2, type=bool, default=true
+        elif msg.topic.endswith("M2_Emergency"):
+            self.m2_emergency = value
+
+        # Silo voll Modul 2, type=bool, default=false
+        elif msg.topic.endswith("M2_Silo_Full"):
+            self.m2_silo_full = value
+
+        else:
+            print("Topic Error.")
+
+    def decode_bool(payload: bytes) -> bool:
+        value = payload.decode("utf-8").strip().lower()
+
+        if value == "true":
+            return True
+        if value == "false":
+            return False
+
+        raise ValueError(f"Ungültiger Boolean-Payload: {value!r}")        
