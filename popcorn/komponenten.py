@@ -6,7 +6,7 @@ class Komponente:
 
     def __init__(self, name: str, topic):
         self.name = name
-        self.topic = self.topic
+        self.topic = topic
     
     def set_mqtt(self, verbindung):
         self.verbindung = verbindung
@@ -76,7 +76,7 @@ class Abtransport(Komponente):
         else:
             return False
 
-class lampen(Komponente):
+class Lampen(Komponente):
     def __init__(self, name, topic):
         super().__init__(name, topic)
         self.lampen = {"Red" : "false",

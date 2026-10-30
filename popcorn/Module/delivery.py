@@ -1,7 +1,7 @@
 """Das Modul der Anlage: besitzt die Komponenten."""
 
-from popcorn.komponenten import Foerderband, Silo, Abtransport
-import config
+from popcorn import config
+from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
 
 
 class Delivery:
@@ -17,6 +17,7 @@ class Delivery:
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
         self.foerderband = Foerderband("foerderband", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
+        self.lampen = Lampen("lampen", self.TOPIC_PREFIX_ACTORS)
 
 
     def set_mqtt(self, mqtt_verbindung):
@@ -25,10 +26,7 @@ class Delivery:
         self.silo.set_mqtt(mqtt_verbindung)
         self.foerderband.set_mqtt(mqtt_verbindung)
         self.abtransport.set_mqtt(mqtt_verbindung)
-
-    def starten(self):
-        # TODO
-        pass
+        self.lampen.set_mqtt(mqtt_verbindung)
 
     def on_message(self, msg):
         

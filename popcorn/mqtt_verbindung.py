@@ -1,5 +1,5 @@
 """Dünner Wrapper um den MQTT-Client."""
-import config
+from popcorn import config
 from paho.mqtt.client import Client
 
 
@@ -11,7 +11,7 @@ class MqttVerbindung:
         self.modul = modul
 
         # initalize the mqtt_client and its functions
-        self.mqtt_client = Client(Client.CallbackAPIVersion.VERSION2)
+        self.mqtt_client = Client()
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
         self.mqtt_client.on_subscribe = self.on_subscribe
