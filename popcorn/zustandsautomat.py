@@ -124,5 +124,18 @@ class Zustandsautomat:
     
     # --- Lampensteuerung ---
     def lampen_aktualisieren(zustand):
-        # TODO
-        pass
+        match zustand:
+            case Zustand.INIT:
+                self.modul.lampen.set_lampen("true","true","true")
+            case Zustand.BEREIT:
+                self.modul.lampen.set_lampen("false","true","false")
+            case Zustand.VORLAUF:
+                self.modul.lampen.set_lampen("false","true","true")
+            case Zustand.LAEUFT:
+                self.modul.lampen.set_lampen("false","false","true")
+            case Zustand.STOP:
+                self.modul.lampen.set_lampen("true","false","false")
+            case Zustand.NACHLAUF:
+                self.modul.lampen.set_lampen("false","true","true")
+        
+        return
