@@ -41,28 +41,24 @@ class Zustandsautomat:
             case Zustand.BEREIT:
                 # checks
                 if not (self.ist_Silo_leer() or self.ist_M2_Silo_voll()):
-                    break
-
-                # Wenn alles ok
-                self.druckluft_an()
-                self.set_counter(1)
-                neuer_zustand = Zustand.VORLAUF
+                    pass
+                else: # Wenn alles ok
+                    self.druckluft_an()
+                    self.set_counter(1)
+                    neuer_zustand = Zustand.VORLAUF
             
             case Zustand.VORLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
                     self.foerderband_an()
                     neuer_zustand = Zustand.LAEUFT
-                break
             
             case Zustand.LAEUFT:
-                # checks
                 if self.ist_Silo_leer() or self.ist_M2_Silo_voll():
                     self.set_counter(1)
                     neuer_zustand = Zustand.Nachlauf
                 
                 # Wenn alles ok -> bleiben wir am laufen
-                break
             
             case Zustand.STOP:
                 if (self.ist_Not_Aus_ausgeloest() or 
@@ -70,15 +66,14 @@ class Zustandsautomat:
                     self.ist_trichter_voll() or
                     self.ist_M2_Not_Aus_ausgeloest()
                     ):
-                    break
-                # Wenn alles ok
-                neuer_zustand = Zustand.BEREIT
+                    pass
+                else:
+                    neuer_zustand = Zustand.BEREIT
                 
             case Zustand.NACHLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
                     neuer_zustand = Zustand.BEREIT
-                break
         
         self.zustand = neuer_zustand
         
