@@ -27,7 +27,7 @@ class Foerderband(Komponente):
     def start(self):
         """Foerderband starten, MQTT publish"""
 
-        info = self.verbindung.publish(self.topic + "Actor", "true", qos=1)
+        info = self.verbindung.mqtt_client.publish(self.topic + "Actor", "true", qos=1)
 
         if info.is_published():
             self.running = True
@@ -38,7 +38,7 @@ class Foerderband(Komponente):
     def stop(self):
         """Foerderband stoppen, MQTT publish"""
 
-        info = self.verbindung.publish(self.topic + "Actor", "false", qos=1)
+        info = self.verbindung.mqtt_client.publish(self.topic + "Actor", "false", qos=1)
 
         if info.is_published():
             self.running = False
@@ -57,7 +57,7 @@ class Abtransport(Komponente):
     def start_air(self):
         """Druckluft starten, MQTT publish"""
 
-        info = self.verbindung.publish(self.topic + "Air", "true", qos=1)
+        info = self.verbindung.mqtt_client.publish(self.topic + "Air", "true", qos=1)
 
         if info.is_published():
             self.air = True
@@ -68,7 +68,7 @@ class Abtransport(Komponente):
     def stop_air(self):
         """Foerderband stoppen, MQTT publish"""
 
-        info = self.verbindung.publish(self.topic + "Air", "false", qos=1)
+        info = self.verbindung.mqtt_client.publish(self.topic + "Air", "false", qos=1)
 
         if info.is_published():
             self.air = False
@@ -93,7 +93,7 @@ class Lampen(Komponente):
                    "Yellow" : yellow,
                    "Green" : green}
         
-        info = self.verbindung.publish(self.topic + "Lampen", payload, qos=1)
+        info = self.verbindung.mqtt_client.publish(self.topic + "Lampen", payload, qos=1)
 
         if info.is_published():
             self.lampen = payload

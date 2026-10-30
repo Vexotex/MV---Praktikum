@@ -5,6 +5,7 @@ import time
 modul = Delivery()
 mqtt_verbindung = MqttVerbindung(modul)
 
+modul.set_mqtt(mqtt_verbindung)
 modul.foerderband.start()
 time.sleep(5)
 modul.foerderband.stop()

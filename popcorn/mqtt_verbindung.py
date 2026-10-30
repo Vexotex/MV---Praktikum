@@ -14,7 +14,6 @@ class MqttVerbindung:
         self.mqtt_client = Client()
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
-        self.mqtt_client.on_subscribe = self.on_subscribe
 
         # start the connection
         self.mqtt_client.connect(
