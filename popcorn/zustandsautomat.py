@@ -6,10 +6,10 @@ from enum import Enum, auto
 class Zustand(Enum):
     INIT = auto() # PON
     BEREIT = auto()
+    VORLAUF = auto()
     LAEUFT = auto()
     STOP = auto()
     NACHLAUF = auto()
-    VORLAUF = auto()
 
 
 class Zustandsautomat:
@@ -25,64 +25,104 @@ class Zustandsautomat:
     def schritt(self):
         """Einen Durchlauf ausführen: Bedingungen prüfen, ggf. Zustand wechseln."""
         
-        if self.ist_Not_Aus_ausgelöst():
+        if (self.ist_Not_Aus_ausgeloest() or 
+            self.ist_trichter_voll() or 
+            self.ist_M2_Not_Aus_ausgeloest()
+            ):
             self.alles_aus()
             self.zustand = Zustand.STOP
             return
         
         match self.zustand:
             case Zustand.INIT:
+                self.alles_aus()
                 neuer_zustand = Zustand.BEREIT
             
             case Zustand.BEREIT:
                 # checks
-                if not self.M2_kann_empfangen():
+                if not (self.ist_Silo_leer() or self.ist_M2_Silo_voll()):
                     break
 
                 # Wenn alles ok
-                # TODO Fließband und Druckluft an
-                 
-                neuer_zustand = Zustand.LAEUFT
+                self.druckluft_an()
+                self.set_counter(1)
+                neuer_zustand = Zustand.VORLAUF
+            
+            case Zustand.VORLAUF:
+                self.counter -= 1
+                if self.counter <= 0:
+                    self.foerderband_an()
+                    neuer_zustand = Zustand.LAEUFT
+                break
             
             case Zustand.LAEUFT:
                 # checks
-                if self.ist_Silo_leer():
-                    self.counter = self.wartezeit_in_sekunden / self.intervall
+                if self.ist_Silo_leer() or self.ist_M2_Silo_voll():
+                    self.set_counter(1)
                     neuer_zustand = Zustand.Nachlauf
                 
                 # Wenn alles ok -> bleiben wir am laufen
                 break
             
             case Zustand.STOP:
-                if self.ist_Not_Aus_ausgelöst():
+                if (self.ist_Not_Aus_ausgeloest() or 
+                    self.ist_Silo_leer() or 
+                    self.ist_trichter_voll() or
+                    self.ist_M2_Not_Aus_ausgeloest()
+                    ):
                     break
-                if self.ist_Silo_leer():
-                    break
+                # Wenn alles ok
+                neuer_zustand = Zustand.BEREIT
                 
             case Zustand.NACHLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
-                    neuer_zustand = Zustand.STOP
-                break
-            
-            case Zustand.VORLAUF:
+                    neuer_zustand = Zustand.BEREIT
                 break
         
         self.zustand = neuer_zustand
+        
+        self.lampen_aktualisieren(self.zustand)
+        
         return
     
-    def ist_Not_Aus_ausgelöst():
+    # --- checks ---
+    def ist_Not_Aus_ausgeloest():
         # TODO
         pass
     
-    def alles_aus():
+    def ist_M2_Not_Aus_ausgeloest():
         # TODO
-        pass    
+        pass
     
     def ist_Silo_leer():
         # TODO
         pass
 
-    def M2_kann_empfangen():
+    def ist_M2_Silo_voll():
+        # TODO
+        pass
+    
+    def ist_trichter_voll():
+        # TODO
+        pass
+    
+    # --- Intern ---
+    def set_counter(Zeit_in_Sekunden):
+        """Setzt die WarteZeit in Sekunden"""
+        self.counter = Zeit_in_Sekunden / self.intervall
+        return
+    
+    # --- Aktorensteuerung ---
+    def foerderband_an():
+        # TODO
+        pass
+    
+    def alles_aus():
+        # TODO Förderband, Druckluft, Lampen
+        pass
+    
+    # --- Lampensteuerung ---
+    def lampen_aktualisieren(zustand):
         # TODO
         pass
