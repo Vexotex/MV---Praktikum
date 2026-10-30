@@ -15,11 +15,11 @@ modul.set_mqtt(mqtt_verbindung)
 print("verbindung set")
 
 
-# print("start")
-# modul.foerderband.start()
-# time.sleep(5)
-# print("stop")
-# modul.foerderband.stop()
+print("start")
+modul.foerderband.start()
+time.sleep(5)
+print("stop")
+modul.foerderband.stop()
 
 
 
@@ -31,6 +31,6 @@ modul.abtransport.stop_air()
 print("stopped")
 
 
-# modul.lampen.set_lampen("true","true","true")
-# time.sleep(5)
-# modul.lampen.set_lampen("false","false","false")
+modul.lampen.set_lampen(True, True, True)
+time.sleep(5)
+modul.lampen.set_lampen(False, False, False)
