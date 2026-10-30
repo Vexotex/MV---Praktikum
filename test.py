@@ -13,6 +13,24 @@ if mqtt_verbindung == None:
 mqtt_verbindung.mqtt_client.loop()
 modul.set_mqtt(mqtt_verbindung)
 print("verbindung set")
-modul.lampen.set_lampen("true","true","true")
+
+
+# print("start")
+# modul.foerderband.start()
+# time.sleep(5)
+# print("stop")
+# modul.foerderband.stop()
+
+
+
+modul.abtransport.start_air()
+print("started")
 time.sleep(5)
-modul.lampen.set_lampen("false","false","false")
+print("stopping now")
+modul.abtransport.stop_air()
+print("stopped")
+
+
+# modul.lampen.set_lampen("true","true","true")
+# time.sleep(5)
+# modul.lampen.set_lampen("false","false","false")
