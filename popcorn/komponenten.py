@@ -1,5 +1,5 @@
 """Komponenten des Moduls."""
-
+import json
 
 class Komponente:
     """Basisklasse für alle Komponenten."""
@@ -29,10 +29,12 @@ class Foerderband(Komponente):
 
         info = self.verbindung.mqtt_client.publish(self.topic + "Actor", "true", qos=1)
 
-        if info.is_published():
+        try:
+            info.wait_for_publish()
+
             self.running = True
             return True
-        else:
+        except RuntimeError:
             return False
 
     def stop(self):
@@ -40,10 +42,12 @@ class Foerderband(Komponente):
 
         info = self.verbindung.mqtt_client.publish(self.topic + "Actor", "false", qos=1)
 
-        if info.is_published():
+        try:
+            info.wait_for_publish()
+
             self.running = False
             return True
-        else:
+        except RuntimeError:
             return False
 
 
@@ -59,10 +63,12 @@ class Abtransport(Komponente):
 
         info = self.verbindung.mqtt_client.publish(self.topic + "Air", "true", qos=1)
 
-        if info.is_published():
+        try:
+            info.wait_for_publish()
+
             self.air = True
             return True
-        else:
+        except RuntimeError:
             return False
         
     def stop_air(self):
@@ -70,12 +76,14 @@ class Abtransport(Komponente):
 
         info = self.verbindung.mqtt_client.publish(self.topic + "Air", "false", qos=1)
 
-        if info.is_published():
+        try:
+            info.wait_for_publish()
+
             self.air = False
             return True
-        else:
+        except RuntimeError:
             return False
-
+        
 class Lampen(Komponente):
     def __init__(self, name, topic):
         super().__init__(name, topic)
@@ -88,14 +96,17 @@ class Lampen(Komponente):
         allowed = ["true", "false"]
         if not(red in allowed and yellow in allowed and green in allowed):
             return False
-        
-        payload = {"Red" : red,
+
+        payload = json.dumps({"Red" : red,
                    "Yellow" : yellow,
-                   "Green" : green}
-        
+                   "Green" : green}).encode("utf-8")
+
         info = self.verbindung.mqtt_client.publish(self.topic + "Lampen", payload, qos=1)
 
-        if info.is_published():
+        try:    
+            info.wait_for_publish(10)
+            print("wait done")
             self.lampen = payload
             return True
-        return False
+        except RuntimeError:
+            return False

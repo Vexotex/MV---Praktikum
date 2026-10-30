@@ -15,10 +15,11 @@ class MqttVerbindung:
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
 
+        self.mqtt_client.username_pw_set(config.USER, config.PASSWORD)
         # start the connection
         self.mqtt_client.connect(
-            config.BROKER_HOST,
-            config.BROKER_PORT
+            host = config.BROKER_HOST,
+            port = config.BROKER_PORT
             )
 
     def on_connect(self, client, userdata, flags, rc):
