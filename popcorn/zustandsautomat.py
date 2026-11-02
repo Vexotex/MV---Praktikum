@@ -1,7 +1,7 @@
 """Zustandsautomat(en) zur Steuerung des Moduls."""
 
 from enum import Enum, auto
-
+from config import INTERVALL
 
 class Zustand(Enum):
     INIT = auto() # PON
@@ -15,10 +15,9 @@ class Zustand(Enum):
 class Zustandsautomat:
     """Steuert das Modul. Spricht nie direkt mit MQTT, nur mit dem Modul."""
 
-    def __init__(self, _modul, _intervall):
+    def __init__(self, _modul):
         self.modul = _modul
         self.zustand = Zustand.INIT
-        self.intervall = _intervall
         self.counter = 0
         self.wartezeit_in_sekunden = 1
 
@@ -82,43 +81,43 @@ class Zustandsautomat:
         return
     
     # --- checks ---
-    def ist_Not_Aus_ausgeloest():
+    def ist_Not_Aus_ausgeloest(self):
         # TODO
         pass
     
-    def ist_M2_Not_Aus_ausgeloest():
+    def ist_M2_Not_Aus_ausgeloest(self):
         # TODO
         pass
     
-    def ist_Silo_leer():
+    def ist_Silo_leer(self):
         # TODO
         pass
 
-    def ist_M2_Silo_voll():
+    def ist_M2_Silo_voll(self):
         # TODO
         pass
     
-    def ist_trichter_voll():
+    def ist_trichter_voll(self):
         # TODO
         pass
     
     # --- Intern ---
-    def set_counter(Zeit_in_Sekunden):
+    def set_counter(self, Zeit_in_Sekunden):
         """Setzt die WarteZeit in Sekunden"""
-        self.counter = Zeit_in_Sekunden / self.intervall
+        self.counter = Zeit_in_Sekunden / INTERVALL
         return
     
     # --- Aktorensteuerung ---
-    def foerderband_an():
+    def foerderband_an(self):
         # TODO
         pass
     
-    def alles_aus():
+    def alles_aus(self):
         # TODO Förderband, Druckluft, Lampen
         pass
     
     # --- Lampensteuerung ---
-    def lampen_aktualisieren(zustand):
+    def lampen_aktualisieren(self, zustand):
         match zustand:
             case Zustand.INIT:
                 self.modul.lampen.set_lampen("true","true","true")

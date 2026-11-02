@@ -1,6 +1,6 @@
 """Das Modul der Anlage: besitzt die Komponenten."""
 
-from popcorn import config
+from popcorn.config import (TOPIC_PREFIX_DELIVERY_ACTORS, TOPIC_PREFIX_DELIVERY_SENSORS)
 from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
 
 
@@ -10,8 +10,8 @@ class Delivery:
     def __init__(self):
 
         # import mqtt_topics for Module from Config
-        self.TOPIC_PREFIX_SENSORS = config.TOPIC_PREFIX_DELIVERY_SENSORS
-        self.TOPIC_PREFIX_ACTORS = config.TOPIC_PREFIX_DELIVERY_ACTORS
+        self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_DELIVERY_SENSORS
+        self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_DELIVERY_ACTORS
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)

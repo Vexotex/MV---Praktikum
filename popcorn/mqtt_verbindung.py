@@ -1,5 +1,5 @@
 """Dünner Wrapper um den MQTT-Client."""
-from popcorn import config
+from popcorn.config import (BROKER_HOST, BROKER_PORT, USER, PASSWORD)
 from paho.mqtt.client import Client
 
 
@@ -15,11 +15,11 @@ class MqttVerbindung:
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
 
-        self.mqtt_client.username_pw_set(config.USER, config.PASSWORD)
+        self.mqtt_client.username_pw_set(USER, PASSWORD)
         # start the connection
         self.mqtt_client.connect(
-            host = config.BROKER_HOST,
-            port = config.BROKER_PORT
+            host = BROKER_HOST,
+            port = BROKER_PORT
             )
 
     def on_connect(self, client, userdata, flags, rc):

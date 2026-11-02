@@ -13,7 +13,7 @@ def main():
         return
 
     modul.set_mqtt(mqtt_verbindung)
-    automat = Zustandsautomat(modul, INTERVALL)
+    automat = Zustandsautomat(modul)
 
     while True:
         automat.schritt()

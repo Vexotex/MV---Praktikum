@@ -1,17 +1,17 @@
 """Das Modul der Anlage: besitzt die Komponenten."""
 
 from popcorn.komponenten import Ruettler, Silo, Abtransport
-from popcorn import config
+from popcorn.config import (TOPIC_PREFIX_STORAGE_ACTORS, TOPIC_PREFIX_STORAGE_SENSORS)
 
 
-class Delivery:
+class Storage:
     """Fasst alle Komponenten zusammen und verteilt eingehende MQTT-Nachrichten."""
 
     def __init__(self):
 
         # import mqtt_topics for Module from Config
-        self.TOPIC_PREFIX_SENSORS = config.TOPIC_PREFIX_DELIVERY_SENSORS
-        self.TOPIC_PREFIX_ACTORS = config.TOPIC_PREFIX_DELIVERY_ACTORS
+        self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_STORAGE_SENSORS
+        self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_STORAGE_ACTORS
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
@@ -20,7 +20,7 @@ class Delivery:
 
 
     def set_mqtt(self, mqtt_verbindung):
-        """Verbindet Delivery und Komponenten mit der MQTT-Schnittstelle."""
+        """Verbindet STORAGE und Komponenten mit der MQTT-Schnittstelle."""
         self.mqtt = mqtt_verbindung
         self.silo.set_mqtt(mqtt_verbindung)
         self.ruettler.set_mqtt(mqtt_verbindung)
