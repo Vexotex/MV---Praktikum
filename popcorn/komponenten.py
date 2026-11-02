@@ -89,19 +89,19 @@ class Abtransport(Komponente):
 class Lampen(Komponente):
     def __init__(self, name, topic):
         super().__init__(name, topic)
-        self.lampen = {"Red" : "false",
-                       "Yellow" : "false",
-                       "Green" : "false"}
+        self.lampen = {"Red"    : False,
+                       "Yellow" : False,
+                       "Green"  : False  }
 
     def set_lampen(self, red : bool, orange : bool, green : bool):
-        """ lampen setzen, input red, yellow, green = {"true" | "false"}"""
-        # allowed = ["true", "false"]
-        # if not(red in allowed and yellow in allowed and green in allowed):
-        #     return False
+        """ lampen setzen, allowed input: red, yellow, green = {True | False }"""
+        allowed = [True, False]
+        if not(red in allowed and orange in allowed and green in allowed):
+            return False
 
-        payload = json.dumps({"Red" : red,
+        payload = json.dumps({"Red"    : red,
                               "Orange" : orange,
-                              "Green" : green   }).encode("utf-8")
+                              "Green"  : green   }).encode("utf-8")
 
         info = self.verbindung.mqtt_client.publish(self.topic + "Lamps", payload, qos=0)
 
