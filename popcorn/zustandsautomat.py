@@ -28,34 +28,42 @@ class Zustandsautomat:
             self.ist_trichter_voll() or 
             self.ist_M2_Not_Aus_ausgeloest()
             ):
-            self.alles_aus()
+            while True:
+                if self.modul.stop_all():
+                    break
             self.zustand = Zustand.STOP
             return
         
         match self.zustand:
             case Zustand.INIT:
-                self.alles_aus()
+                while True:
+                    if self.modul.stop_all():
+                        break
                 neuer_zustand = Zustand.BEREIT
             
             case Zustand.BEREIT:
-                # checks
+                # checks Silo of Module 1 and 2
                 if not (self.ist_Silo_leer() or self.ist_M2_Silo_voll()):
                     pass
                 else: # Wenn alles ok
-                    self.druckluft_an()
-                    self.set_counter(1)
+                    while True:
+                        if self.modul.air_start():
+                            break
+                    self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.VORLAUF
             
             case Zustand.VORLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
-                    self.foerderband_an()
+                    while True:
+                        if self.modul.transport_start():
+                            break
                     neuer_zustand = Zustand.LAEUFT
             
             case Zustand.LAEUFT:
                 if self.ist_Silo_leer() or self.ist_M2_Silo_voll():
-                    self.set_counter(1)
-                    neuer_zustand = Zustand.Nachlauf
+                    self.set_wait_in_seconds(1)
+                    neuer_zustand = Zustand.NACHLAUF
                 
                 # Wenn alles ok -> bleiben wir am laufen
             
@@ -72,6 +80,12 @@ class Zustandsautomat:
             case Zustand.NACHLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
+                    while True:
+                        if self.modul.transport_stop():
+                            break
+                    while True:
+                        if self.modul.air_stop():
+                            break
                     neuer_zustand = Zustand.BEREIT
         
         self.zustand = neuer_zustand
@@ -82,54 +96,50 @@ class Zustandsautomat:
     
     # --- checks ---
     def ist_Not_Aus_ausgeloest(self):
-        # TODO
-        pass
+        return self.modul.emergency
     
     def ist_M2_Not_Aus_ausgeloest(self):
-        # TODO
-        pass
+        return self.modul.m2_emergency
     
     def ist_Silo_leer(self):
-        # TODO
-        pass
+        return not(self.modul.silo.sensor_bottom)
 
     def ist_M2_Silo_voll(self):
-        # TODO
-        pass
+        return self.modul.silo.sensor_top
     
     def ist_trichter_voll(self):
-        # TODO
-        pass
+        return self.modul.abtransport.funnel
     
     # --- Intern ---
-    def set_counter(self, Zeit_in_Sekunden):
+    def set_wait_in_seconds(self, Zeit_in_Sekunden):
         """Setzt die WarteZeit in Sekunden"""
         self.counter = Zeit_in_Sekunden / INTERVALL
         return
-    
-    # --- Aktorensteuerung ---
-    def foerderband_an(self):
-        # TODO
-        pass
-    
-    def alles_aus(self):
-        # TODO Förderband, Druckluft, Lampen
-        pass
     
     # --- Lampensteuerung ---
     def lampen_aktualisieren(self, zustand):
         match zustand:
             case Zustand.INIT:
-                self.modul.lampen.set_lampen("true","true","true")
+                while True:
+                    if self.modul.lampen.set_lampen("true","true","true"):
+                        break
             case Zustand.BEREIT:
-                self.modul.lampen.set_lampen("false","true","false")
+                while True:
+                    if self.modul.lampen.set_lampen("false","true","false"):
+                        break
             case Zustand.VORLAUF:
-                self.modul.lampen.set_lampen("false","true","true")
+                while True:
+                    if self.modul.lampen.set_lampen("false","true","true"):
+                        break
             case Zustand.LAEUFT:
-                self.modul.lampen.set_lampen("false","false","true")
+                while True:
+                    if self.modul.lampen.set_lampen("false","false","true"):
+                        break
             case Zustand.STOP:
-                self.modul.lampen.set_lampen("true","false","false")
+                while True:
+                    if self.modul.lampen.set_lampen("true","false","false"):
+                        break
             case Zustand.NACHLAUF:
-                self.modul.lampen.set_lampen("false","true","true")
-        
-        return
+                while True:
+                    if self.modul.lampen.set_lampen("false","true","true"):
+                        break

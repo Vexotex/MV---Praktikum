@@ -59,6 +59,21 @@ class Delivery:
         else:
             print("Topic Error.")
 
+    def stop_all(self):
+        return (self.foerderband.stop() and self.abtransport.stop_air())
+
+    def transport_start(self):
+        return self.foerderband.start()
+
+    def transport_stop(self):
+        return self.foerderband.stop()
+
+    def air_start(self):
+        return self.abtransport.start_air()
+
+    def air_stop(self):
+        return self.abtransport.stop_air()
+
     def decode_bool(payload: bytes) -> bool:
         value = payload.decode("utf-8").strip().lower()
 
