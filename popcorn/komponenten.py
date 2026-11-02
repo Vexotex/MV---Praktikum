@@ -51,7 +51,37 @@ class Foerderband(Komponente):
         except RuntimeError:
             return False
 
+class Ruettler(Komponente):
+    def __init__(self, name: str, topic):
+        super().__init__(name, topic)
+        self.running = False
 
+    def start(self):
+        """Ruettler starten, MQTT publish"""
+
+        info = self.verbindung.mqtt_client.publish(self.topic + "Transport/Actor", "true", qos=0)
+
+        try:
+            info.wait_for_publish(timeout=10)
+
+            self.running = True
+            return True
+        except RuntimeError:
+            return False
+
+    def stop(self):
+        """Ruettler stoppen, MQTT publish"""
+
+
+        info = self.verbindung.mqtt_client.publish(self.topic + "Transport/Actor", "false", qos=0)
+
+        try:
+            info.wait_for_publish(timeout=10)
+
+            self.running = False
+            return True
+        except RuntimeError:
+            return False
 
 class Abtransport(Komponente):
     def __init__(self, name: str, topic):

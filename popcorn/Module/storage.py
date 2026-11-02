@@ -15,7 +15,7 @@ class Storage:
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
-        self.foerderband = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
+        self.ruettler = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
 
 
@@ -50,6 +50,21 @@ class Storage:
         else:
             print("Topic Error.")
 
+    def stop_all(self):
+        return (self.ruettler.stop() and self.abtransport.stop_air())
+
+    def transport_start(self):
+        return self.ruettler.start()
+
+    def transport_stop(self):
+        return self.ruettler.stop()
+
+    def air_start(self):
+        return self.abtransport.start_air()
+
+    def air_stop(self):
+        return self.abtransport.stop_air()
+    
     def decode_bool(payload: bytes) -> bool:
         value = payload.decode("utf-8").strip().lower()
 
