@@ -32,12 +32,10 @@ class MqttVerbindung:
 
         client.subscribe(self.modul.TOPIC_PREFIX_SENSORS + "#")
         print("Subscribed to " + self.modul.TOPIC_PREFIX_SENSORS + "#")
-        for cross_comms in self.modul.TOPIC_INTERFACES:
-            client.subscribe(cross_comms + "#")
-            print("Subscribed to " + cross_comms + "#")
+        for interface in self.modul.TOPIC_INTERFACES:
+            client.subscribe(interface)
+            print("Subscribed to " + interface)
         print("MQTT connection established.")
 
     def on_message(self, client, userdata, msg):
-        print(msg.payload)
-        print()
         self.modul.on_message(msg)

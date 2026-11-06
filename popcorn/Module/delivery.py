@@ -1,7 +1,12 @@
 """Das Delivery Modul der Anlage: besitzt die Komponenten Silo, Foerderband und Abtransport."""
 
-from popcorn.config import (TOPIC_PREFIX_DELIVERY_ACTORS, TOPIC_PREFIX_DELIVERY_SENSORS, TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE)
+from popcorn.config import (
+    TOPIC_PREFIX_DELIVERY_ACTORS, 
+    TOPIC_PREFIX_DELIVERY_SENSORS, 
+    TOPIC_DELIVERY_INTERFACES
+)
 from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
+import json
 
 
 class Delivery:
@@ -12,7 +17,7 @@ class Delivery:
         # import mqtt_topics for Module from Config
         self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_DELIVERY_SENSORS
         self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_DELIVERY_ACTORS
-        self.TOPIC_INTERFACES = [TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE]
+        self.TOPIC_INTERFACES = TOPIC_DELIVERY_INTERFACES
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
@@ -31,7 +36,7 @@ class Delivery:
 
     def on_message(self, msg):
         
-        value = self.decode_bool(msg.payload)
+        value = self.decode_bool(msg)
 
         # Silo Top, type=bool, default=true
         if msg.topic.endswith("Top"):
@@ -58,8 +63,8 @@ class Delivery:
             self.m2_silo_full = value
 
         else:
-            print("Topic Error.")
-            print(msg.topic)
+            print("Topic Error:" + msg.topic)
+            print()
             
     def stop_all(self):
         return (self.foerderband.stop() and self.abtransport.stop_air())
@@ -76,12 +81,27 @@ class Delivery:
     def air_stop(self):
         return self.abtransport.stop_air()
 
-    def decode_bool(self, payload: bytes) -> bool:
-        value = payload.decode("utf-8").strip().lower()
+    def decode_bool(self, msg) -> bool:
 
-        if value == "true":
-            return True
-        if value == "false":
-            return False
+        payload = msg.payload
 
-        raise ValueError(f"Ungültiger Boolean-Payload: {value!r}")        
+        # print(f"mid: {msg.mid}")
+        # print("topic: " + msg.topic)
+        # print(f"payload: {payload}")
+
+        try:
+            decoded = json.loads(payload.decode("utf-8"))
+            value = decoded["value"]
+
+            # print(f"value: {value}")
+            # print() 
+
+            if not isinstance(value, bool):
+                raise ValueError(
+                    f"value ist kein Boolean: {value}"
+                )
+
+            return value
+
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            raise ValueError(f"Ungültige MQTT-Payload: {e}") from e

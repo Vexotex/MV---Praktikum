@@ -10,11 +10,19 @@ PASSWORD = "inIT2025!"
 
 TOPIC_PREFIX_DELIVERY_SENSORS = "MV/VPS/Sensors/Delivery/"
 TOPIC_PREFIX_DELIVERY_ACTORS = "MV/VPS/Delivery/"
-TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE = "MV/VPS/DeliveryStorage/"
-
 TOPIC_PREFIX_STORAGE_SENSORS = "MV/VPS/Sensors/Storage/"
 TOPIC_PREFIX_STORAGE_ACTORS = "MV/VPS/Storage/"
-TOPIC_PREFIX_STORAGE_DOSING_INTERFACE = "MV/VPS/StorageDosing/"
+
+TOPIC_DELIVERY_INTERFACES = [
+    "MV/VPS/DeliveryStorage/M2_Silo_Full",
+    "MV/VPS/DeliveryStorage/M2_Emergency"
+]
+TOPIC_STORAGE_INTERFACES = [ 
+    "MV/VPS/DeliveryStorage/M2_Silo_Full",
+    "MV/VPS/DeliveryStorage/M2_Emergency",
+    "MV/VPS/StorageDosing/M3SiloVoll",
+    "MV/VPS/StorageDosing/M3Not-Aus"     
+]
 
 # konstanten
 INTERVALL = 0.1 # des Zustandsautomaten
