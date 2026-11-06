@@ -36,9 +36,7 @@ class Zustandsautomat:
         
         match self.zustand:
             case Zustand.INIT:
-                while True:
-                    if self.modul.stop_all():
-                        break
+                self.modul.stop_all()
                 neuer_zustand = Zustand.BEREIT
             
             case Zustand.BEREIT:
@@ -46,18 +44,14 @@ class Zustandsautomat:
                 if not (self.ist_Silo_leer() or self.ist_M2_Silo_voll()):
                     pass
                 else: # Wenn alles ok
-                    while True:
-                        if self.modul.air_start():
-                            break
+                    self.modul.air_start()
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.VORLAUF
             
             case Zustand.VORLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
-                    while True:
-                        if self.modul.transport_start():
-                            break
+                    self.modul.transport_start()
                     neuer_zustand = Zustand.LAEUFT
             
             case Zustand.LAEUFT:
@@ -80,12 +74,8 @@ class Zustandsautomat:
             case Zustand.NACHLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
-                    while True:
-                        if self.modul.transport_stop():
-                            break
-                    while True:
-                        if self.modul.air_stop():
-                            break
+                    self.modul.transport_stop()
+                    self.modul.air_stop()
                     neuer_zustand = Zustand.BEREIT
         
         self.zustand = neuer_zustand
