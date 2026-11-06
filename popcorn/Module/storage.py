@@ -1,7 +1,12 @@
-"""Das Modul der Anlage: besitzt die Komponenten."""
+"""Das Storage Modul der Anlage: besitzt die Komponenten Silo, Ruettler und Abtransport."""
 
 from popcorn.komponenten import Ruettler, Silo, Abtransport
-from popcorn.config import (TOPIC_PREFIX_STORAGE_ACTORS, TOPIC_PREFIX_STORAGE_SENSORS)
+from popcorn.config import (
+    TOPIC_PREFIX_STORAGE_ACTORS, 
+    TOPIC_PREFIX_STORAGE_SENSORS, 
+    TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE, 
+    TOPIC_PREFIX_STORAGE_DOSING_INTERFACE
+    )
 
 
 class Storage:
@@ -12,6 +17,10 @@ class Storage:
         # import mqtt_topics for Module from Config
         self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_STORAGE_SENSORS
         self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_STORAGE_ACTORS
+        self.TOPIC_PREFIX_INTERFACES = [
+            TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE,
+            TOPIC_PREFIX_STORAGE_DOSING_INTERFACE
+        ]
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
@@ -49,6 +58,7 @@ class Storage:
 
         else:
             print("Topic Error.")
+            print(msg.topic)
 
     def stop_all(self):
         return (self.ruettler.stop() and self.abtransport.stop_air())

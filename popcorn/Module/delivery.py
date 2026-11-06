@@ -1,6 +1,6 @@
-"""Das Modul der Anlage: besitzt die Komponenten."""
+"""Das Delivery Modul der Anlage: besitzt die Komponenten Silo, Foerderband und Abtransport."""
 
-from popcorn.config import (TOPIC_PREFIX_DELIVERY_ACTORS, TOPIC_PREFIX_DELIVERY_SENSORS)
+from popcorn.config import (TOPIC_PREFIX_DELIVERY_ACTORS, TOPIC_PREFIX_DELIVERY_SENSORS, TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE)
 from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
 
 
@@ -12,6 +12,7 @@ class Delivery:
         # import mqtt_topics for Module from Config
         self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_DELIVERY_SENSORS
         self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_DELIVERY_ACTORS
+        self.TOPIC_INTERFACES = [TOPIC_PREFIX_DELIVERY_STORAGE_INTERFACE]
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
@@ -58,7 +59,8 @@ class Delivery:
 
         else:
             print("Topic Error.")
-
+            print(msg.topic)
+            
     def stop_all(self):
         return (self.foerderband.stop() and self.abtransport.stop_air())
 
@@ -74,7 +76,7 @@ class Delivery:
     def air_stop(self):
         return self.abtransport.stop_air()
 
-    def decode_bool(payload: bytes) -> bool:
+    def decode_bool(self, payload: bytes) -> bool:
         value = payload.decode("utf-8").strip().lower()
 
         if value == "true":
