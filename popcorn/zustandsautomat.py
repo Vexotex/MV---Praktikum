@@ -28,9 +28,7 @@ class Zustandsautomat:
             self.ist_trichter_voll() or 
             self.ist_M2_Not_Aus_ausgeloest()
             ):
-            while True:
-                if self.modul.stop_all():
-                    break
+            self.modul.stop_all()
             self.zustand = Zustand.STOP
             return
         
@@ -110,26 +108,14 @@ class Zustandsautomat:
     def lampen_aktualisieren(self, zustand):
         match zustand:
             case Zustand.INIT:
-                while True:
-                    if self.modul.lampen.set_lampen("true","true","true"):
-                        break
+                self.modul.lampen.set_lampen("true","true","true")
             case Zustand.BEREIT:
-                while True:
-                    if self.modul.lampen.set_lampen("false","true","false"):
-                        break
+                self.modul.lampen.set_lampen("false","true","false")
             case Zustand.VORLAUF:
-                while True:
-                    if self.modul.lampen.set_lampen("false","true","true"):
-                        break
+                self.modul.lampen.set_lampen("false","true","true")
             case Zustand.LAEUFT:
-                while True:
-                    if self.modul.lampen.set_lampen("false","false","true"):
-                        break
+                self.modul.lampen.set_lampen("false","false","true")
             case Zustand.STOP:
-                while True:
-                    if self.modul.lampen.set_lampen("true","false","false"):
-                        break
+                self.modul.lampen.set_lampen("true","false","false")
             case Zustand.NACHLAUF:
-                while True:
-                    if self.modul.lampen.set_lampen("false","true","true"):
-                        break
+                self.modul.lampen.set_lampen("false","true","true")
