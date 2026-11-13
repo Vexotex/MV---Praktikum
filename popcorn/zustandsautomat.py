@@ -43,12 +43,11 @@ class Zustandsautomat:
             case Zustand.BEREIT:
                 # checks Silo of Module 1 and 2
                 if self.modul.from_bereit():
-                    pass
-                else: # Wenn alles ok
                     self.modul.air_start()
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.VORLAUF
                     print("Bereit -> Vorlauf")
+                # Wenn alles ok bleiben wir bereit
             
             case Zustand.VORLAUF:
                 self.counter -= 1
