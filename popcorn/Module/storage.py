@@ -86,7 +86,7 @@ class Storage:
             self.abtransport.funnel = value
             
         # NOT-AUS, type=bool, default=true
-        elif msg.topic.endswith("Emergency"):
+        elif msg.topic.endswith("/Emergency"):
             self.emergency = value
             self.send_emergency(value)
             

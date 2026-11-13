@@ -95,14 +95,14 @@ class Zustandsautomat:
     def lampen_aktualisieren(self, zustand):
         match zustand:
             case Zustand.INIT:
-                self.modul.lampen.set_lampen("true","true","true")
+                self.modul.lampen.set_lampen(True,True,True)
             case Zustand.BEREIT:
-                self.modul.lampen.set_lampen("false","true","false")
+                self.modul.lampen.set_lampen(False,True,False)
             case Zustand.VORLAUF:
-                self.modul.lampen.set_lampen("false","true","true")
+                self.modul.lampen.set_lampen(False,True,True)
             case Zustand.LAEUFT:
-                self.modul.lampen.set_lampen("false","false","true")
+                self.modul.lampen.set_lampen(False,False,True)
             case Zustand.STOP:
-                self.modul.lampen.set_lampen("true","false","false")
+                self.modul.lampen.set_lampen(True,False,False)
             case Zustand.NACHLAUF:
-                self.modul.lampen.set_lampen("false","true","true")
+                self.modul.lampen.set_lampen(False,True,True)
