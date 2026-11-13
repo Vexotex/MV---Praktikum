@@ -74,6 +74,7 @@ class Storage:
         # Silo Bottom, type=bool, default=true
         elif msg.topic.endswith("Bottom"):
             self.silo.sensor_bottom = value
+            self.send_silo_full(value)
 
         # Trichter an Schlauch, type=bool, default=false
         elif msg.topic.endswith("Funnel"):
@@ -82,6 +83,8 @@ class Storage:
         # NOT-AUS, type=bool, default=true
         elif msg.topic.endswith("Emergency"):
             self.emergency = value
+            self.send_emergency(value)
+            
 
         elif msg.topic.endswith("M3SiloVoll"):
             self.m3_silo_full = value
@@ -108,6 +111,15 @@ class Storage:
 
     def air_stop(self):
         return self.abtransport.stop_air()
+
+    def send_emergency(self, payload):
+        """Not aus an modul 1 schicken"""
+        self.verbindung.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", payload, qos=0)
+
+    def send_silo_full(self, payload):
+        """Silo voll status senden"""
+        self.verbindung.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", payload, qos=0)
+
 
     def decode_bool(self, msg) -> bool:
 
