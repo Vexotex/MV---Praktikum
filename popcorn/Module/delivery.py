@@ -26,7 +26,7 @@ class Delivery:
         self.lampen = Lampen("lampen", self.TOPIC_PREFIX_ACTORS)
         self.emergency = True
         self.m2_emergency = True
-        self.m2_silo_full = True
+        self.m2_silo_full = False
 
     def to_stop(self) -> bool:
         return (
@@ -36,9 +36,9 @@ class Delivery:
         )
 
     def from_bereit(self) -> bool:   
-        return not (
-            not self.silo.sensor_bottom or
-            self.m2_silo_full
+        return (
+            self.silo.sensor_bottom and
+            not self.m2_silo_full
         )
 
     def from_laeuft(self) -> bool:   
@@ -49,9 +49,9 @@ class Delivery:
 
     def from_stop(self) -> bool:   
         return(
-            not self.emergency or
-            not self.silo.sensor_bottom or
-            self.abtransport.funnel or
+            not self.emergency and
+            not self.silo.sensor_bottom and
+            self.abtransport.funnel and
             not self.m2_emergency
         )
 
