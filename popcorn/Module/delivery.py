@@ -6,7 +6,7 @@ from popcorn.config import (
     TOPIC_DELIVERY_INTERFACES
 )
 from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
-import json
+from popcorn.codec import decode_bool
 
 
 class Delivery:
@@ -65,7 +65,10 @@ class Delivery:
 
     def on_message(self, msg):
         
-        value = self.decode_bool(msg)
+        value = decode_bool(msg.payload)
+        if value is None:
+            print(f"Ungültige Payload auf {msg.topic}: {msg.payload!r}")
+            return
 
         # Silo Top, type=bool, default=true
         if msg.topic.endswith("Top"):
@@ -109,28 +112,3 @@ class Delivery:
 
     def air_stop(self):
         return self.abtransport.stop_air()
-
-    def decode_bool(self, msg) -> bool:
-
-        payload = msg.payload
-
-        # print(f"mid: {msg.mid}")
-        # print("topic: " + msg.topic)
-        # print(f"payload: {payload}")
-
-        try:
-            decoded = json.loads(payload.decode("utf-8"))
-            value = decoded["value"]
-
-            # print(f"value: {value}")
-            # print() 
-
-            if not isinstance(value, bool):
-                raise ValueError(
-                    f"value ist kein Boolean: {value}"
-                )
-
-            return value
-
-        except (json.JSONDecodeError, UnicodeDecodeError) as e:
-            raise ValueError(f"Ungültige MQTT-Payload: {e}") from e
