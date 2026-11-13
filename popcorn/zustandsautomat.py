@@ -20,6 +20,7 @@ class Zustandsautomat:
         self.zustand = Zustand.INIT
         self.counter = 0
         self.wartezeit_in_sekunden = 1
+        self.stopwechsel = False
 
     def schritt(self):
         """Einen Durchlauf ausführen: Bedingungen prüfen, ggf. Zustand wechseln."""
@@ -28,7 +29,9 @@ class Zustandsautomat:
         if self.modul.to_stop():
             self.modul.stop_all()
             self.zustand = Zustand.STOP
-            print("STOp!")
+            if not self.stopwechsel:
+                print("STOp!")
+                self.stopwechsel = True
             return
         
         match self.zustand:
@@ -59,7 +62,6 @@ class Zustandsautomat:
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.NACHLAUF
                     print("Läuft -> Nachlauf")
-                Nachlauf
                 # Wenn alles ok -> bleiben wir am laufen
             
             case Zustand.STOP:
@@ -67,6 +69,7 @@ class Zustandsautomat:
                     pass
                 else:
                     neuer_zustand = Zustand.BEREIT
+                    self.stopwechsel = False
                     print("STOp -> Bereit")
                 
             case Zustand.NACHLAUF:
