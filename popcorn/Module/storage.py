@@ -24,25 +24,35 @@ class Storage:
         self.ruettler = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
         self.emergency = True
+        self.m3_emergency = True
+        self.m3_silo_full = True
 
     def to_stop(self) -> bool:
-        pass
+        return (
+            not self.emergency or
+            self.abtransport.funnel or
+            not self.m3_emergency
+        )
 
     def from_bereit(self) -> bool:   
-        pass
-
-    def from_vorlauf(self) -> bool:   
-        pass
+        return not (
+            not self.silo.sensor_bottom or
+            self.m3_silo_full
+        )
 
     def from_laueft(self) -> bool:   
-        pass
+        return(
+            not self.silo.sensor_bottom or
+            self.m3_silo_full
+        )
 
     def from_stop(self) -> bool:   
-        pass
-
-    def from_nachlauf(self) -> bool:
-        pass
-
+        return(
+            not self.emergency or
+            not self.silo.sensor_bottom or
+            self.abtransport.funnel or
+            not self.m3_emergency
+        )
 
     def set_mqtt(self, mqtt_verbindung):
         """Verbindet STORAGE und Komponenten mit der MQTT-Schnittstelle."""
@@ -70,6 +80,13 @@ class Storage:
         # NOT-AUS, type=bool, default=true
         elif msg.topic.endswith("Emergency"):
             self.emergency = value
+
+        elif msg.topic.endswith("M3SiloVoll"):
+            self.m3_silo_full = value
+
+        elif msg.topic.endswith("M3Not-Aus"):
+            self.m3_emergency = value
+
 
         else:
             print("Topic Error.")
