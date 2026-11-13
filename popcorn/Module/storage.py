@@ -120,11 +120,11 @@ class Storage:
 
     def send_emergency(self, payload):
         """Not aus an modul 1 schicken"""
-        self.verbindung.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", payload, qos=0)
+        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", payload, qos=0)
 
     def send_silo_full(self, payload):
         """Silo voll status senden"""
-        self.verbindung.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", payload, qos=0)
+        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", payload, qos=0)
 
 
     def decode_bool(self, msg) -> bool:
