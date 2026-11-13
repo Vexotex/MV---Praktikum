@@ -61,10 +61,11 @@ class Storage:
         self.silo.set_mqtt(mqtt_verbindung)
         self.ruettler.set_mqtt(mqtt_verbindung)
         self.abtransport.set_mqtt(mqtt_verbindung)
+        self.lampen.set_mqtt(mqtt_verbindung)
 
     def on_message(self, msg):
         
-        value = self.decode_bool(msg.payload)
+        value = self.decode_bool(msg)
 
         # Silo Top, type=bool, default=true
         if msg.topic.endswith("Top"):
