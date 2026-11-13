@@ -24,7 +24,24 @@ class Storage:
         self.ruettler = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
         self.emergency = True
-        
+
+    def to_stop(self) -> bool:
+        pass
+
+    def from_bereit(self) -> bool:   
+        pass
+
+    def from_vorlauf(self) -> bool:   
+        pass
+
+    def from_laueft(self) -> bool:   
+        pass
+
+    def from_stop(self) -> bool:   
+        pass
+
+    def from_nachlauf(self) -> bool:
+        pass
 
 
     def set_mqtt(self, mqtt_verbindung):

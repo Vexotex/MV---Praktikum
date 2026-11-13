@@ -28,6 +28,23 @@ class Delivery:
         self.m2_emergency = True
         self.m2_silo_full = True
 
+    def to_stop(self) -> bool:
+        pass
+
+    def from_bereit(self) -> bool:   
+        pass
+
+    def from_vorlauf(self) -> bool:   
+        pass
+
+    def from_laueft(self) -> bool:   
+        pass
+
+    def from_stop(self) -> bool:   
+        pass
+
+    def from_nachlauf(self) -> bool:
+        pass
 
     def set_mqtt(self, mqtt_verbindung):
         """Verbindet Delivery und Komponenten mit der MQTT-Schnittstelle."""
