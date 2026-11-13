@@ -24,6 +24,9 @@ class Delivery:
         self.foerderband = Foerderband("foerderband", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
         self.lampen = Lampen("lampen", self.TOPIC_PREFIX_ACTORS)
+        self.emergency = True
+        self.m2_emergency = True
+        self.m2_silo_full = True
 
 
     def set_mqtt(self, mqtt_verbindung):
