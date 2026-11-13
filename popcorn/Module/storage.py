@@ -74,7 +74,10 @@ class Storage:
         # Silo Bottom, type=bool, default=true
         elif msg.topic.endswith("Bottom"):
             self.silo.sensor_bottom = value
-            self.send_silo_full(value)
+            if value:
+                self.send_silo_full("true")
+            else:
+                self.send_silo_full("false")
 
         # Trichter an Schlauch, type=bool, default=false
         elif msg.topic.endswith("Funnel"):
@@ -83,7 +86,10 @@ class Storage:
         # NOT-AUS, type=bool, default=true
         elif msg.topic.endswith("Emergency"):
             self.emergency = value
-            self.send_emergency(value)
+            if value:
+                self.send_emergency("true")
+            else:
+                self.send_emergency("false")
             
 
         elif msg.topic.endswith("M3SiloVoll"):
