@@ -28,12 +28,14 @@ class Zustandsautomat:
         if self.modul.to_stop():
             self.modul.stop_all()
             self.zustand = Zustand.STOP
+            print("STOp!")
             return
         
         match self.zustand:
             case Zustand.INIT:
                 self.modul.stop_all()
                 neuer_zustand = Zustand.BEREIT
+                print("Init -> Bereit")
             
             case Zustand.BEREIT:
                 # checks Silo of Module 1 and 2
@@ -43,18 +45,21 @@ class Zustandsautomat:
                     self.modul.air_start()
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.VORLAUF
+                    print("Bereit -> Vorlauf")
             
             case Zustand.VORLAUF:
                 self.counter -= 1
                 if self.counter <= 0:
                     self.modul.transport_start()
                     neuer_zustand = Zustand.LAEUFT
+                    print("Vorlauf -> Läuft")
             
             case Zustand.LAEUFT:
                 if self.modul.from_laeuft():
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.NACHLAUF
-                
+                    print("Läuft -> Nachlauf")
+                Nachlauf
                 # Wenn alles ok -> bleiben wir am laufen
             
             case Zustand.STOP:
@@ -62,6 +67,7 @@ class Zustandsautomat:
                     pass
                 else:
                     neuer_zustand = Zustand.BEREIT
+                    print("STOp -> Bereit")
                 
             case Zustand.NACHLAUF:
                 self.counter -= 1
@@ -69,6 +75,7 @@ class Zustandsautomat:
                     self.modul.transport_stop()
                     self.modul.air_stop()
                     neuer_zustand = Zustand.BEREIT
+                    print("Nachlauf -> Bereit")
         
         self.zustand = neuer_zustand
         
