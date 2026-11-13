@@ -17,9 +17,11 @@ TOPIC_DELIVERY_INTERFACES = [
     "MV/VPS/DeliveryStorage/M2_Silo_Full",
     "MV/VPS/DeliveryStorage/M2_Emergency"
 ]
-TOPIC_STORAGE_INTERFACES = [ 
+TOPIC_STORAGE_INTERFACES_SPEAK = [ 
     "MV/VPS/DeliveryStorage/M2_Silo_Full",
     "MV/VPS/DeliveryStorage/M2_Emergency",
+]
+TOPIC_STORAGE_INTERFACES_LISTEN =[
     "MV/VPS/StorageDosing/M3SiloVoll",
     "MV/VPS/StorageDosing/M3Not-Aus"     
 ]

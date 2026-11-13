@@ -32,7 +32,7 @@ class MqttVerbindung:
 
         client.subscribe(self.modul.TOPIC_PREFIX_SENSORS + "#")
         print("Subscribed to " + self.modul.TOPIC_PREFIX_SENSORS + "#")
-        for interface in self.modul.TOPIC_INTERFACES:
+        for interface in self.modul.TOPIC_INTERFACES_LISTEN:
             client.subscribe(interface)
             print("Subscribed to " + interface)
         print("MQTT connection established.")

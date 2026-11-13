@@ -5,7 +5,8 @@ from popcorn.komponenten import Ruettler, Silo, Abtransport, Lampen
 from popcorn.config import (
     TOPIC_PREFIX_STORAGE_ACTORS, 
     TOPIC_PREFIX_STORAGE_SENSORS, 
-    TOPIC_STORAGE_INTERFACES,
+    TOPIC_STORAGE_INTERFACES_LISTEN,
+    TOPIC_STORAGE_INTERFACES_SPEAK
 )
 
 
@@ -17,7 +18,8 @@ class Storage:
         # import mqtt_topics for Module from Config
         self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_STORAGE_SENSORS
         self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_STORAGE_ACTORS
-        self.TOPIC_INTERFACES = TOPIC_STORAGE_INTERFACES
+        self.TOPIC_INTERFACES_LISTEN = TOPIC_STORAGE_INTERFACES_LISTEN
+        self.TOPIC_INTERFACES_SPEAK = TOPIC_STORAGE_INTERFACES_SPEAK
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
