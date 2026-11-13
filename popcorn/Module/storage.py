@@ -41,7 +41,7 @@ class Storage:
             self.m3_silo_full
         )
 
-    def from_laueft(self) -> bool:   
+    def from_laeuft(self) -> bool:   
         return(
             not self.silo.sensor_bottom or
             self.m3_silo_full
