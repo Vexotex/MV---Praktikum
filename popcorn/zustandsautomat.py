@@ -24,10 +24,7 @@ class Zustandsautomat:
     def schritt(self):
         """Einen Durchlauf ausführen: Bedingungen prüfen, ggf. Zustand wechseln."""
         
-        if (self.ist_Not_Aus_ausgeloest() or 
-            self.ist_trichter_voll() or 
-            self.ist_M2_Not_Aus_ausgeloest()
-            ):
+        if self.modul.to_stop()
             self.modul.stop_all()
             self.zustand = Zustand.STOP
             return
@@ -39,7 +36,7 @@ class Zustandsautomat:
             
             case Zustand.BEREIT:
                 # checks Silo of Module 1 and 2
-                if not (self.ist_Silo_leer() or self.ist_M2_Silo_voll()):
+                if self.modul.from_bereit():
                     pass
                 else: # Wenn alles ok
                     self.modul.air_start()
@@ -53,18 +50,14 @@ class Zustandsautomat:
                     neuer_zustand = Zustand.LAEUFT
             
             case Zustand.LAEUFT:
-                if self.ist_Silo_leer() or self.ist_M2_Silo_voll():
+                if self.modul.from_laeuft():
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.NACHLAUF
                 
                 # Wenn alles ok -> bleiben wir am laufen
             
             case Zustand.STOP:
-                if (self.ist_Not_Aus_ausgeloest() or 
-                    self.ist_Silo_leer() or 
-                    self.ist_trichter_voll() or
-                    self.ist_M2_Not_Aus_ausgeloest()
-                    ):
+                if self.modul.from_stop():
                     pass
                 else:
                     neuer_zustand = Zustand.BEREIT
@@ -81,22 +74,6 @@ class Zustandsautomat:
         self.lampen_aktualisieren(self.zustand)
         
         return
-    
-    # --- checks ---
-    def ist_Not_Aus_ausgeloest(self):
-        return self.modul.emergency
-    
-    def ist_M2_Not_Aus_ausgeloest(self):
-        return self.modul.m2_emergency
-    
-    def ist_Silo_leer(self):
-        return not(self.modul.silo.sensor_bottom)
-
-    def ist_M2_Silo_voll(self):
-        return self.modul.silo.sensor_top
-    
-    def ist_trichter_voll(self):
-        return self.modul.abtransport.funnel
     
     # --- Intern ---
     def set_wait_in_seconds(self, Zeit_in_Sekunden):
