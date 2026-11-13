@@ -1,7 +1,7 @@
 """Das Storage Modul der Anlage: besitzt die Komponenten Silo, Ruettler und Abtransport."""
 
 import json
-from popcorn.komponenten import Ruettler, Silo, Abtransport
+from popcorn.komponenten import Ruettler, Silo, Abtransport, Lampen
 from popcorn.config import (
     TOPIC_PREFIX_STORAGE_ACTORS, 
     TOPIC_PREFIX_STORAGE_SENSORS, 
@@ -23,6 +23,7 @@ class Storage:
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
         self.ruettler = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
+        self.lampen = Lampen("lampen", self.TOPIC_PREFIX_ACTORS)
         self.emergency = True
         self.m3_emergency = True
         self.m3_silo_full = True
