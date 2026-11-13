@@ -1,6 +1,6 @@
 """Das Storage Modul der Anlage: besitzt die Komponenten Silo, Ruettler und Abtransport."""
 
-import json
+from popcorn.codec import decode_bool, encode_bool
 from popcorn.komponenten import Ruettler, Silo, Abtransport, Lampen
 from popcorn.config import (
     TOPIC_PREFIX_STORAGE_ACTORS, 
@@ -65,7 +65,10 @@ class Storage:
 
     def on_message(self, msg):
         
-        value = self.decode_bool(msg)
+        value = decode_bool(msg.payload)
+        if value is None:
+            print(f"Ungültige Payload auf {msg.topic}: {msg.payload!r}")
+            return
 
         # Silo Top, type=bool, default=true
         if msg.topic.endswith("Top"):
@@ -74,10 +77,7 @@ class Storage:
         # Silo Bottom, type=bool, default=true
         elif msg.topic.endswith("Bottom"):
             self.silo.sensor_bottom = value
-            if value:
-                self.send_silo_full("true")
-            else:
-                self.send_silo_full("false")
+            self.send_silo_full(value)
 
         # Trichter an Schlauch, type=bool, default=false
         elif msg.topic.endswith("Funnel"):
@@ -86,10 +86,7 @@ class Storage:
         # NOT-AUS, type=bool, default=true
         elif msg.topic.endswith("Emergency"):
             self.emergency = value
-            if value:
-                self.send_emergency("true")
-            else:
-                self.send_emergency("false")
+            self.send_emergency(value)
             
 
         elif msg.topic.endswith("M3SiloVoll"):
@@ -118,36 +115,10 @@ class Storage:
     def air_stop(self):
         return self.abtransport.stop_air()
 
-    def send_emergency(self, payload):
+    def send_emergency(self, value: bool):
         """Not aus an modul 1 schicken"""
-        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", payload, qos=0)
+        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", encode_bool(value), qos=0)
 
-    def send_silo_full(self, payload):
+    def send_silo_full(self, value: bool):
         """Silo voll status senden"""
-        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", payload, qos=0)
-
-
-    def decode_bool(self, msg) -> bool:
-
-        payload = msg.payload
-
-        # print(f"mid: {msg.mid}")
-        # print("topic: " + msg.topic)
-        # print(f"payload: {payload}")
-
-        try:
-            decoded = json.loads(payload.decode("utf-8"))
-            value = decoded["value"]
-
-            # print(f"value: {value}")
-            # print() 
-
-            if not isinstance(value, bool):
-                raise ValueError(
-                    f"value ist kein Boolean: {value}"
-                )
-
-            return value
-
-        except (json.JSONDecodeError, UnicodeDecodeError) as e:
-            raise ValueError(f"Ungültige MQTT-Payload: {e}") from e
+        self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", encode_bool(value), qos=0)
