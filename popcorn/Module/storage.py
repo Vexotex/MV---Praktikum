@@ -74,22 +74,16 @@ class Storage:
         # Silo Bottom, type=bool, default=true
         elif msg.topic.endswith("Bottom"):
             self.silo.sensor_bottom = value
-            if value:
-                self.send_silo_full("true")
-            else:
-                self.send_silo_full("false")
+            self.send_silo_full(value)
 
         # Trichter an Schlauch, type=bool, default=false
         elif msg.topic.endswith("Funnel"):
             self.abtransport.funnel = value
             
         # NOT-AUS, type=bool, default=true
-        elif msg.topic.endswith("Emergency"):
+        elif msg.topic.endswith("/Emergency"):
             self.emergency = value
-            if value:
-                self.send_emergency("true")
-            else:
-                self.send_emergency("false")
+            self.send_emergency(value)
             
 
         elif msg.topic.endswith("M3SiloVoll"):
@@ -120,11 +114,20 @@ class Storage:
 
     def send_emergency(self, payload):
         """Not aus an modul 1 schicken"""
+        encoded = self.encode_bool(payload)
         self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Emergency", payload, qos=0)
 
     def send_silo_full(self, payload):
         """Silo voll status senden"""
+        encoded = self.encode_bool(payload)
         self.mqtt.mqtt_client.publish("MV/VPS/DeliveryStorage/M2_Silo_Full", payload, qos=0)
+
+    def encode_bool(self, value: bool) -> bytes:
+        if not isinstance(value, bool):
+            raise ValueError(f"value ist kein Boolean: {value}")
+
+        payload = {"value": value}
+        return json.dumps(payload)
 
 
     def decode_bool(self, msg) -> bool:

@@ -80,7 +80,7 @@ class Delivery:
             self.abtransport.funnel = value
             
         # NOT-AUS, type=bool, default=true
-        elif msg.topic.endswith("Emergency"):
+        elif msg.topic.endswith("/Emergency"):
             self.emergency = value
 
         # NOT-AUS Modul 2, type=bool, default=true
