@@ -23,8 +23,9 @@ class Zustandsautomat:
 
     def schritt(self):
         """Einen Durchlauf ausführen: Bedingungen prüfen, ggf. Zustand wechseln."""
+        neuer_zustand = self.zustand
         
-        if self.modul.to_stop()
+        if self.modul.to_stop():
             self.modul.stop_all()
             self.zustand = Zustand.STOP
             return
