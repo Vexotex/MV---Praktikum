@@ -23,6 +23,8 @@ class Storage:
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
         self.ruettler = Ruettler("ruettler", self.TOPIC_PREFIX_ACTORS)
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
+        self.emergency = True
+        
 
 
     def set_mqtt(self, mqtt_verbindung):
