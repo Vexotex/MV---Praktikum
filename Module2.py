@@ -1,5 +1,5 @@
 from popcorn.config import INTERVALL
-from popcorn.Module.delivery import Delivery
+from popcorn.Module.storage import Storage
 from popcorn.mqtt_verbindung import MqttVerbindung
 from popcorn.zustandsautomat import Zustandsautomat
 import time
