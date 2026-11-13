@@ -1,7 +1,7 @@
 """Zustandsautomat(en) zur Steuerung des Moduls."""
 
 from enum import Enum, auto
-from config import INTERVALL
+from popcorn.config import INTERVALL
 
 class Zustand(Enum):
     INIT = auto() # PON
