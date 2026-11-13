@@ -4,7 +4,7 @@ from popcorn.mqtt_verbindung import MqttVerbindung
 from popcorn.zustandsautomat import Zustandsautomat
 import time
 
-async def Module2():
+def Module2():
     modul = Storage()
     
     mqtt_verbindung = MqttVerbindung(modul)
