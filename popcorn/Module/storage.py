@@ -52,7 +52,6 @@ class Storage:
     def from_stop(self) -> bool:   
         return(
             self.emergency and
-            self.silo.sensor_bottom and
             not self.abtransport.funnel and
             self.m3_emergency
         )
