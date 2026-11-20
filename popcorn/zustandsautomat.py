@@ -21,7 +21,6 @@ class Zustandsautomat:
         self.counter = 0
         self.wartezeit_in_sekunden = 1
         self.stopwechsel = False
-        self.bereitwechsel = False
 
     def schritt(self):
         """Einen Durchlauf ausführen: Bedingungen prüfen, ggf. Zustand wechseln."""
@@ -48,10 +47,9 @@ class Zustandsautomat:
                     self.modul.air_start()
                     self.set_wait_in_seconds(1)
                     neuer_zustand = Zustand.VORLAUF
-                    self.bereitwechsel = False
-                if not self.bereitwechsel:
                     print("Bereit -> Vorlauf")
-                    self.bereitwechsel = True
+                else:
+                    pass
                 # Wenn alles ok bleiben wir bereit
             
             case Zustand.VORLAUF:
