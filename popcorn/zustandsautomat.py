@@ -68,8 +68,6 @@ class Zustandsautomat:
             
             case Zustand.STOP:
                 if self.modul.from_stop():
-                    pass
-                else:
                     neuer_zustand = Zustand.BEREIT
                     self.stopwechsel = False
                     print("STOp -> Bereit")
