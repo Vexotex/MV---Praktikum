@@ -137,7 +137,6 @@ class Lampen(Komponente):
 
         try:    
             info.wait_for_publish(timeout=10)
-            print("wait done")
             self.lampen = payload
             return True
         except RuntimeError:
