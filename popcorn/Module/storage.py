@@ -51,10 +51,10 @@ class Storage:
 
     def from_stop(self) -> bool:   
         return(
-            not self.emergency and
-            not self.silo.sensor_bottom and
-            self.abtransport.funnel and
-            not self.m3_emergency
+            self.emergency and
+            self.silo.sensor_bottom and
+            not self.abtransport.funnel and
+            self.m3_emergency
         )
 
     def set_mqtt(self, mqtt_verbindung):
@@ -75,11 +75,11 @@ class Storage:
         # Silo Top, type=bool, default=true
         if msg.topic.endswith("Top"):
             self.silo.sensor_top = value
+            self.send_silo_full(value)
 
         # Silo Bottom, type=bool, default=true
         elif msg.topic.endswith("Bottom"):
             self.silo.sensor_bottom = value
-            self.send_silo_full(value)
 
         # Trichter an Schlauch, type=bool, default=false
         elif msg.topic.endswith("Funnel"):
