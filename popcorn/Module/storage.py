@@ -27,6 +27,7 @@ class Storage:
         self.abtransport = Abtransport("abtransport", self.TOPIC_PREFIX_ACTORS)
         self.lampen = Lampen("lampen", self.TOPIC_PREFIX_ACTORS)
         self.emergency = True
+        self.m3_blockiert = True
         self.m3_emergency = True
         self.m3_silo_full = False
 

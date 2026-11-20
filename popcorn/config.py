@@ -23,7 +23,8 @@ TOPIC_STORAGE_INTERFACES_SPEAK = [
 ]
 TOPIC_STORAGE_INTERFACES_LISTEN =[
     "MV/VPS/StorageDosing/M3SiloVoll",
-    "MV/VPS/StorageDosing/M3Not-Aus"     
+    "MV/VPS/StorageDosing/M3Not-Aus",
+    "MV/VPS/StorageDosing/Block"     
 ]
 
 # konstanten
