@@ -49,10 +49,10 @@ class Delivery:
 
     def from_stop(self) -> bool:   
         return(
-            not self.emergency and
-            not self.silo.sensor_bottom and
-            self.abtransport.funnel and
-            not self.m2_emergency
+            self.emergency and
+            self.silo.sensor_bottom and
+            not self.abtransport.funnel and
+            self.m2_emergency
         )
 
     def set_mqtt(self, mqtt_verbindung):
