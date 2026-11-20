@@ -3,7 +3,7 @@
 from popcorn.config import (
     TOPIC_PREFIX_DELIVERY_ACTORS, 
     TOPIC_PREFIX_DELIVERY_SENSORS, 
-    TOPIC_DELIVERY_INTERFACES
+    TOPIC_DELIVERY_INTERFACES_LISTEN
 )
 from popcorn.komponenten import Foerderband, Silo, Abtransport, Lampen
 from popcorn.codec import decode_bool
@@ -17,7 +17,7 @@ class Delivery:
         # import mqtt_topics for Module from Config
         self.TOPIC_PREFIX_SENSORS = TOPIC_PREFIX_DELIVERY_SENSORS
         self.TOPIC_PREFIX_ACTORS = TOPIC_PREFIX_DELIVERY_ACTORS
-        self.TOPIC_INTERFACES = TOPIC_DELIVERY_INTERFACES
+        self.TOPIC_INTERFACES_LISTEN = TOPIC_DELIVERY_INTERFACES_LISTEN
 
         # initialise Components
         self.silo = Silo("silo", self.TOPIC_PREFIX_ACTORS)
