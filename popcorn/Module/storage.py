@@ -40,12 +40,14 @@ class Storage:
     def from_bereit(self) -> bool:   
         return(
             self.silo.sensor_bottom and
-            not self.m3_silo_full
+            not self.m3_silo_full and
+            not self.m3_blockiert
         )
 
     def from_laeuft(self) -> bool:   
         return(
             not self.silo.sensor_bottom or
+            self.m3_blockiert or
             self.m3_silo_full
         )
 
@@ -88,7 +90,9 @@ class Storage:
         elif msg.topic.endswith("/Emergency"):
             self.emergency = value
             self.send_emergency(value)
-            
+        
+        elif msg.topic.endswith("Block"):
+            self.m3_blockiert = value
 
         elif msg.topic.endswith("M3SiloVoll"):
             self.m3_silo_full = value
