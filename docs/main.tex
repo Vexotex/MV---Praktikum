@@ -1,0 +1,342 @@
+\documentclass[12pt,a4paper]{report}
+
+% Praktikumsdokumentation MV, Modul 1 "Delivery".
+% Layout angelehnt an die TH-OWL-Formatvorlage (Arial/Helvetica 12 pt).
+% Gliederung gemäß Inhalt_Dokumentation.txt.
+
+% Sprache, Schrift und Mikrotypografie
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage[scaled=0.95]{helvet}
+  \renewcommand{\familydefault}{\sfdefault}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{Arial}{%
+    \setmainfont{Arial}
+    \setsansfont{Arial}
+  }{%
+    \setmainfont{TeX Gyre Heros}
+    \setsansfont{TeX Gyre Heros}
+  }
+\fi
+% shorthands=off: sonst frisst babel das " in JSON-Beispielen wie {"value": true}
+\usepackage[ngerman,shorthands=off]{babel}
+\usepackage{microtype}
+\usepackage{setspace}
+
+% Seitenlayout: A4, oben 2,5 cm, unten 2 cm, rechts 2 cm, links 2 cm + 1 cm Bundsteg
+\usepackage[
+  a4paper,
+  top=2.5cm,
+  bottom=2cm,
+  left=3cm,
+  right=2cm,
+  headheight=16pt,
+  headsep=0.8cm,
+  footskip=1.2cm
+]{geometry}
+
+% Tabellen, Grafiken, Verweise
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage[table]{xcolor}
+\usepackage{listings}
+\usepackage[pdfpagelabels,plainpages=false,hypertexnames=false,hidelinks]{hyperref}
+
+% Diagramme: Zustandsautomat, Topologie, Zeitverläufe
+\usepackage{tikz}
+\usetikzlibrary{automata,positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage{tikz-timing}
+
+% Grundformat: Blocksatz, mind. 16 pt Zeilenabstand, 8 pt nach Absätzen
+\setstretch{1.104}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+\frenchspacing
+\sloppy
+
+% Gliederung: dekadisch, ohne Punkt am Ende
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\titleformat{\chapter}[hang]
+  {\normalfont\linespread{1}\fontsize{14pt}{16pt}\selectfont\bfseries}
+  {\thechapter}{1em}{}
+\titleformat{\section}
+  {\normalfont\linespread{1}\fontsize{12pt}{16pt}\selectfont\bfseries}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\linespread{1}\fontsize{12pt}{16pt}\selectfont}
+  {\thesubsection}{1em}{}
+\titlespacing*{\chapter}{0pt}{18pt}{9pt}
+\titlespacing*{\section}{0pt}{18pt}{9pt}
+\titlespacing*{\subsection}{0pt}{18pt}{6pt}
+
+% Verzeichnisse
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+\renewcommand{\listfigurename}{Abbildungsverzeichnis}
+\renewcommand{\listtablename}{Tabellenverzeichnis}
+\renewcommand{\bibname}{Literaturverzeichnis}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cfttoctitlefont}{\normalfont\linespread{1}\fontsize{14pt}{16pt}\selectfont\bfseries}
+\renewcommand{\cftloftitlefont}{\normalfont\linespread{1}\fontsize{14pt}{16pt}\selectfont\bfseries}
+\renewcommand{\cftlottitlefont}{\normalfont\linespread{1}\fontsize{14pt}{16pt}\selectfont\bfseries}
+
+% Beschriftungen: Nummerierung je Kapitel
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\captionsetup{
+  font=normalsize,
+  labelfont=bf,
+  labelsep=colon,
+  justification=raggedright,
+  singlelinecheck=false
+}
+
+% Aufzählungen: linksbündig, hängend eingerückt
+\setlist[itemize]{label=\textbullet, leftmargin=1.25cm, labelsep=0.35cm, itemsep=0pt, parsep=0pt, topsep=0pt}
+\setlist[enumerate]{leftmargin=1.25cm, labelsep=0.35cm, itemsep=0pt, parsep=0pt, topsep=0pt}
+
+% Quelltext und JSON
+\lstdefinelanguage{json}{
+  morestring=[b]",
+  literate={:}{{\textcolor{gray}{:}}}1 {,}{{\textcolor{gray}{,}}}1,
+}
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=single,
+  rulecolor=\color{gray!60},
+  backgroundcolor=\color{gray!8},
+  xleftmargin=0.2cm,
+  framexleftmargin=0.2cm,
+  breaklines=true,
+  stringstyle=\color{teal!70!black},
+  showstringspaces=false
+}
+
+% ---------------------------------------------------------------------------
+% Metadaten (hier anpassen)
+% ---------------------------------------------------------------------------
+\newcommand{\Hochschule}{Technische Hochschule Ostwestfalen-Lippe}
+\newcommand{\HochschuleKurz}{TH OWL}
+\newcommand{\Fachbereich}{Fachbereich Informatik und Automation}
+\newcommand{\Lehrveranstaltung}{Maschinennahe Vernetzung - Praktikum}
+\newcommand{\Arbeitstyp}{Praktikumsdokumentation}
+\newcommand{\Arbeitstitel}{Steuerung von Modul~1 \glqq Delivery\grqq{} der Popcorn-Modellanlage über MQTT}
+\newcommand{\Semester}{WS 2026/27}
+\newcommand{\Abgabedatum}{\today}
+\newcommand{\AutorNamenFuss}{Braun, Mahnke, Porde}
+
+% Bearbeiter mit Matrikelnummer
+\newcommand{\AutorenTabelle}{%
+  \begin{tabular}{@{}ll@{}}
+    Jeremy Braun & Matr.-Nr.: 2012 6818 \\
+    Jan Mahnke   & Matr.-Nr.: 1546 7074 \\
+    Dustin Porde & Matr.-Nr.: 2013 4105 \\
+  \end{tabular}%
+}
+
+% Betreuer
+\newcommand{\BetreuerTabelle}{%
+  \begin{tabular}{@{}ll@{}}
+    Prof. Dr. Jürgen Jasperneite \\
+    Benedikt Lücke \\
+  \end{tabular}%
+}
+
+% ---------------------------------------------------------------------------
+% Kopf- und Fußzeile
+% ---------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{\thepage}
+\fancyfoot[L]{\AutorNamenFuss}
+\fancyfoot[C]{\HochschuleKurz}
+\fancyfoot[R]{\Semester}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyhead[L]{\nouppercase{\leftmark}}\fancyhead[R]{\thepage}%
+  \fancyfoot[L]{\AutorNamenFuss}\fancyfoot[C]{\HochschuleKurz}\fancyfoot[R]{\Semester}%
+}
+
+% ---------------------------------------------------------------------------
+% Hilfsbefehle
+% ---------------------------------------------------------------------------
+
+% Deckblatt
+\newcommand{\makedeckblatt}{%
+  \begin{titlepage}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1.0cm}
+    {\fontsize{23pt}{28pt}\selectfont\bfseries \Hochschule\par}
+    \vspace{0.6cm}
+    {\fontsize{16pt}{20pt}\selectfont \Fachbereich\par}
+    \vspace{1.6cm}
+    {\fontsize{22pt}{26pt}\selectfont\bfseries \Arbeitstyp\par}
+    \vspace{0.4cm}
+    {\fontsize{14pt}{18pt}\selectfont \Lehrveranstaltung\par}
+    \vspace{1.4cm}
+    {\fontsize{18pt}{24pt}\selectfont\bfseries \Arbeitstitel\par}
+    \vfill
+    \begin{flushleft}
+      \fontsize{13pt}{18pt}\selectfont
+      \begin{tabular}{@{}p{3.4cm}@{\hspace{0.4cm}}l@{}}
+        \textbf{Bearbeiter:} & \AutorenTabelle \\[1cm]
+        \textbf{Betreuer:}   & \BetreuerTabelle \\[0.6cm]
+        \textbf{Semester:}   & \Semester \\[0.3cm]
+        \textbf{Abgabe:}     & \Abgabedatum \\
+      \end{tabular}
+    \end{flushleft}
+    \vspace{1cm}
+  \end{titlepage}
+}
+
+% Ungezähltes Kapitel im Vorspann
+\newcommand{\vorspannkapitel}[1]{%
+  \clearpage
+  \phantomsection
+  \chapter*{#1}
+  \markboth{#1}{}
+}
+
+% Abkürzungen
+\newenvironment{abkuerzungsverzeichnis}{%
+  \vorspannkapitel{Abkürzungsverzeichnis}
+  \addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+  \begin{longtable}{@{}p{3cm}@{\hspace{0.5cm}}p{\dimexpr\textwidth-3.5cm\relax}@{}}
+}{%
+  \end{longtable}
+}
+\newcommand{\abk}[2]{\leavevmode\hypertarget{abk:#1}{#1} & #2\\}
+\DeclareRobustCommand{\abkref}[1]{\hyperlink{abk:#1}{#1}}
+
+% Bild einbinden oder Platzhalter anzeigen, solange die Datei fehlt
+% \bildoderplatzhalter[Breite]{abbildungen/datei}{Beschriftung}{label}
+\newcommand{\bildoderplatzhalter}[4][width=\linewidth]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{#2}{%
+      \includegraphics[#1]{#2}%
+    }{%
+      \fbox{\parbox[c][4cm][c]{0.85\linewidth}{\centering Abbildung fehlt:\\ \texttt{\detokenize{#2}}}}%
+    }%
+    \caption{#3}
+    \label{#4}
+  \end{figure}
+}
+
+% Lampe als Symbol: \lampe{red}{1} = an, \lampe{red}{0} = aus
+\newcommand{\lampe}[2]{%
+  \ifnum#2=1
+    \tikz[baseline=-0.6ex]\filldraw[draw=black, fill=#1] (0,0) circle (0.17cm);%
+  \else
+    \tikz[baseline=-0.6ex]\draw[gray!70] (0,0) circle (0.17cm);%
+  \fi
+}
+\definecolor{lamperot}{RGB}{220,30,30}
+\definecolor{lampeorange}{RGB}{245,150,20}
+\definecolor{lampegruen}{RGB}{40,170,60}
+
+% Zeitdiagramme (tikz-timing): einheitlicher Rahmen
+% \begin{zeitdiagramm}{Beschriftung}{label} ... Zeilen ... \end{zeitdiagramm}
+\tikzset{timing/d/text/.style={font=\scriptsize}}
+\newenvironment{zeitdiagramm}[2]{%
+  \def\zeitdiagrammcaption{#1}%
+  \def\zeitdiagrammlabel{#2}%
+  % [H]: Diagramm steht immer direkt unter dem zugehörigen Text
+  \begin{figure}[H]
+  \centering
+  \small
+}{%
+  \caption{\zeitdiagrammcaption}
+  \label{\zeitdiagrammlabel}
+  \end{figure}
+}
+
+% TODO-Markierung im Text (vor Abgabe alle entfernen)
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{TODO:} #1}}
+
+% ---------------------------------------------------------------------------
+\begin{document}
+
+\makedeckblatt
+
+\pagenumbering{Roman}
+\setcounter{page}{1}
+
+\clearpage
+\phantomsection
+\markboth{Inhaltsverzeichnis}{}
+\tableofcontents
+
+\clearpage
+\phantomsection
+\markboth{Abbildungsverzeichnis}{}
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\listoffigures
+
+\clearpage
+\phantomsection
+\markboth{Tabellenverzeichnis}{}
+\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+\listoftables
+
+\input{abkuerzungsverzeichnis}
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{kapitel/01-einleitung}
+\input{kapitel/02-programmablauf}
+\input{kapitel/03-hardware-topologie}
+\input{kapitel/04-zeitverlauf}
+\input{kapitel/05-kommunikation}
+\input{kapitel/06-visuelle-signale}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+\markboth{Literaturverzeichnis}{}
+\begin{thebibliography}{9}
+  \raggedright
+  \bibitem{doku-popcorn}
+  inIT / TH OWL: Maschinennahe Vernetzung Praktikum -- von MQTT bis zu Node-Red
+  (\texttt{popcornUA\_doku\_studis.pdf}). Praktikumsunterlage, \Semester.
+
+  \bibitem{vps-simple-view}
+  inIT / TH OWL: VPS Simple View -- Übersicht der MQTT-Topics aller Module.
+  Online: \url{http://frankfort.init.local:1337/simple.php} (nur im Hochschulnetz),
+  Zugriff am 15.10.2026.
+
+  \bibitem{paho}
+  Eclipse Foundation: Eclipse Paho MQTT Python Client, Version 2.1.
+  Online: \url{https://eclipse.dev/paho/files/paho.mqtt.python/html/}, Zugriff am 13.11.2026.
+
+  \bibitem{mqtt311}
+  OASIS: MQTT Version 3.1.1. OASIS Standard, 2014.
+  Online: \url{https://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.html}, Zugriff am 13.11.2026.
+
+  \bibitem{rfc8259}
+  Bray, T.: RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format.
+  IETF, 2017. Online: \url{https://www.rfc-editor.org/rfc/rfc8259}, Zugriff am 13.11.2026.
+\end{thebibliography}
+
+\end{document}

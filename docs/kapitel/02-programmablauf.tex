@@ -1,0 +1,75 @@
+\chapter{Programmablauf}
+\label{chap:programmablauf}
+
+% Inhalt laut Vorgabe:
+%  - PAP oder Zustandsdiagramm o. Ä.
+%  - ggf. Erläuterungen zum Bild
+
+Die Steuerung von Modul~1 ist als Zustandsautomat umgesetzt. Die Methode
+\texttt{schritt()} wird alle 0,1~s aufgerufen. Sie prüft zuerst die
+Sicherheitsbedingungen und wertet danach den aktuellen Zustand aus.
+Abbildung~\ref{fig:zustandsautomat} zeigt die Zustände und Übergänge.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+      zustand/.style={draw, rectangle, rounded corners=4pt, minimum width=2.6cm,
+                      minimum height=1.1cm, align=center, font=\small\bfseries},
+      stopzustand/.style={zustand, draw=lamperot, very thick},
+      uebergang/.style={-{Stealth[length=2.5mm]}, thick},
+      bed/.style={font=\scriptsize, align=center},
+      node distance=2.2cm and 3.2cm
+    ]
+    \node[zustand]                         (init)     {INIT};
+    \node[zustand, right=of init]          (bereit)   {BEREIT};
+    \node[zustand, right=of bereit]        (vorlauf)  {VORLAUF};
+    \node[zustand, below=of vorlauf]       (laeuft)   {LÄUFT};
+    \node[zustand, below=of bereit]        (nachlauf) {NACHLAUF};
+    \node[stopzustand, below=of init]      (stop)     {STOP};
+
+    \draw[uebergang] ($(init.west)+(-0.8,0)$) -- (init.west);
+
+    \draw[uebergang] (init) -- node[bed, above] {Aktoren aus} (bereit);
+    \draw[uebergang] (bereit) -- node[bed, above] {Silo nicht leer $\wedge$\\ M2 nicht voll}
+                                node[bed, below] {/ Luft an} (vorlauf);
+    \draw[uebergang] (vorlauf) -- node[bed, right] {nach 1~s\\ / Motor an} (laeuft);
+    \draw[uebergang] (laeuft) -- node[bed, below] {Silo leer $\vee$\\ M2 voll} (nachlauf);
+    \draw[uebergang] (nachlauf) -- node[bed, right] {nach 1~s\\ / Motor, Luft aus} (bereit);
+    \draw[uebergang] (stop) -- node[bed, above, sloped] {kein Sicherheitsfehler} (bereit);
+
+    \node[bed, below=0.9cm of stop, text width=5.2cm, draw=lamperot, dashed,
+          rounded corners=3pt, inner sep=4pt] (alle)
+      {aus jedem Zustand:\\ Not-Aus $\vee$ M2-Not-Aus $\vee$ Trichter voll\\ / Motor, Luft aus};
+    \draw[uebergang, draw=lamperot] (alle) -- (stop);
+  \end{tikzpicture}
+  \caption{Zustandsautomat von Modul~1 (Delivery)}
+  \label{fig:zustandsautomat}
+\end{figure}
+
+\section{Zustände}
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{\textwidth}{@{}l X@{}}
+    \toprule
+    \textbf{Zustand} & \textbf{Beschreibung} \\
+    \midrule
+    INIT     & Startzustand nach dem Einschalten. Alle Aktoren werden ausgeschaltet, danach folgt BEREIT. \\
+    BEREIT   & Wartet, bis im Silo Material liegt und Modul~2 Material aufnehmen kann. Dann wird die Druckluft eingeschaltet. \\
+    VORLAUF  & Die Druckluft läuft 1~s vor, damit der Schlauch frei ist, bevor das Förderband Mais nachschiebt. \\
+    LÄUFT    & Förderband und Druckluft laufen. Ist das Silo leer oder Modul~2 voll, folgt der NACHLAUF. \\
+    NACHLAUF & Förderband und Druckluft laufen 1~s nach, danach werden beide abgeschaltet. \\
+    STOP     & Sicherheitszustand. Alle Aktoren sind aus, bis kein Sicherheitsfehler mehr anliegt. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Zustände des Automaten}
+  \label{tab:zustaende}
+\end{table}
+
+\section{Sicherheitsbedingungen}
+
+Vor jeder Zustandsauswertung prüft der Automat drei Sicherheitsbedingungen:
+den eigenen Not-Aus, den Not-Aus von Modul~2 und einen vollen Trichter. Trifft
+eine davon zu, werden Motor und Druckluft im selben Schritt ausgeschaltet und
+der Automat wechselt nach STOP, unabhängig vom aktuellen Zustand.
+

@@ -1,0 +1,66 @@
+\chapter{Einleitung}
+\label{chap:einleitung}
+
+% Inhalt laut Vorgabe:
+%  - Beschreibung der gesamten Anlage (Kurzfassung)
+%  - Beschreibung des eigenen Moduls (detailliert)
+
+\section{Gesamtanlage}
+\label{sec:gesamtanlage}
+
+Die Modellanlage (\abkref{VPS}) bildet die Herstellung von Popcorn in vier
+hintereinander geschalteten Modulen ab. Der Mais durchläuft die Module in der
+Reihenfolge Delivery, Storage, Dosing und Production. Die Anlage wird
+ausschließlich über einen \abkref{MQTT}-Broker angesprochen: Sensorwerte werden
+vom Broker gelesen, Aktoren werden durch Nachrichten an den Broker geschaltet
+\cite{doku-popcorn}.
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{\textwidth}{@{}l l X@{}}
+    \toprule
+    \textbf{Modul} & \textbf{Name} & \textbf{Aufgabe} \\
+    \midrule
+    1 & Delivery   & Anlieferung: Mais aus dem Silo per Förderband und Druckluft an Modul~2 übergeben \\
+    2 & Storage    & Zwischenlagerung; Weitertransport über pneumatischen Muskel und Druckluft \\
+    3 & Dosing     & Dosierung über Förderschnecke (Drehzahl per \abkref{PWM}) und Wägezelle \\
+    4 & Production & Poppen mit Heizspirale; Becher und Flanke für die Ausgabe \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Module der Gesamtanlage}
+  \label{tab:module}
+\end{table}
+
+\todo{Kurzbeschreibung der Gesamtanlage ergänzen: Zusammenspiel der Module,
+welche Gruppe welches Modul steuert, Material- und Signalfluss.}
+
+\section{Modul 1 -- Delivery}
+\label{sec:modul-delivery}
+
+Modul~1 ist das erste Modul der Anlage. Es fördert den Mais aus seinem Silo über
+ein Förderband in einen Trichter. Von dort wird der Mais mit Druckluft durch einen
+Schlauch zu Modul~2 (Storage) transportiert. Sobald der Motor des Förderbands
+eingeschaltet wird, läuft die Druckluft automatisch mit \cite{doku-popcorn}.
+
+Das Modul besitzt fünf Aktoren (Motor, Druckluft und drei Signallampen) sowie vier
+Sensoren (Silo oben, Silo unten, Trichter und Not-Aus). Eine vollständige Liste mit
+Funktion und MQTT-Topic steht in Kapitel~\ref{chap:hardware}.
+
+\bildoderplatzhalter[width=0.8\linewidth]{abbildungen/delivery-schema.png}
+  {Aufbau von Modul~1 (Delivery) mit Lage der Sensoren und Aktoren \cite{doku-popcorn}}
+  {fig:delivery-schema}
+
+Die Steuerung ist in Python mit der Bibliothek \texttt{paho-mqtt} umgesetzt
+\cite{paho}. Sie besteht aus drei Schichten:
+\begin{itemize}
+  \item \textbf{Komponenten} (\texttt{komponenten.py}): kapseln je einen Aktor
+        und senden dessen Befehle an den Broker.
+  \item \textbf{Modul} (\texttt{Module/delivery.py}): hält die aktuellen
+        Sensorwerte und verteilt eingehende Nachrichten.
+  \item \textbf{Zustandsautomat} (\texttt{zustandsautomat.py}): entscheidet
+        zyklisch alle 0,1~s anhand der Sensorwerte über den nächsten
+        Zustand und schaltet die Aktoren über das Modul.
+\end{itemize}
+
+\todo{Aufgabe und Randbedingungen des Moduls detailliert beschreiben
+(Startbedingung, Abschaltbedingungen, Kopplung zu Modul~2, Sicherheitsverhalten).}

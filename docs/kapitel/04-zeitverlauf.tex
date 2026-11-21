@@ -1,0 +1,146 @@
+\chapter{Zeitlicher Verlauf der Sensoren und Aktoren}
+\label{chap:zeitverlauf}
+
+% Inhalt laut Vorgabe:
+%  - Diagramm mit allen Sensoren und Aktoren über der Zeit
+%  - 1. normaler Ablauf, mindestens 3 Fehlerfälle
+%
+% Hinweise zu tikz-timing:
+%   H = high (true), L = low (false), D{Text} = Bus/Zustand mit Beschriftung
+%   Zahl davor = Länge in Rastereinheiten, z. B. 3H = drei Einheiten high.
+%   Jede Zeile muss in Summe gleich lang sein (hier 14 Einheiten = 7 s).
+
+Die folgenden Diagramme zeigen alle Sensoren und Aktoren von Modul~1 sowie die
+Handshake-Signale von Modul~2 über der Zeit. Ein Rasterkästchen entspricht
+0,5~s. Hoch bedeutet \texttt{true}: bei Silo- und Trichtersensoren
+\glqq erkannt\grqq, bei Aktoren \glqq an\grqq. Die beiden Not-Aus-Signale sind
+sicherheitsgerichtet ausgelegt (Kapitel~\ref{sec:sensoren-aktoren}): Hoch
+bedeutet \glqq Not-Aus nicht gedrückt\grqq, erst ein Wechsel auf low löst den
+Stopp aus.
+
+INIT und der direkt folgende Zustand BEREIT (\glqq BER.\grqq) dauern in der
+Steuerung nur je einen Zyklus von 0,1~s. Sie sind zur besseren Lesbarkeit
+mit einem Rasterkästchen dargestellt.
+
+\section{Normaler Ablauf}
+\label{sec:verlauf-normal}
+
+Material liegt im Silo, Modul~2 ist frei. Die Steuerung startet die Druckluft,
+schaltet nach 1~s das Förderband zu und fördert. Während der Förderung wird das
+Silo kurzzeitig ganz gefüllt (Silo Top), anschließend leert es sich, bis auch
+Silo Bottom kein Material mehr erkennt. Danach laufen Band und Luft 1~s nach.
+Silo Top hat dabei keinen Einfluss auf den Ablauf.
+
+Hinweis: Die Förderphase ist stark verkürzt dargestellt. In der realen Anlage
+leert sich ein volles Silo nicht innerhalb von 2,5~s.
+
+\begin{zeitdiagramm}{Zeitverlauf im normalen Ablauf}{fig:verlauf-normal}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikztimingtable}[timing/slope=0, xscale=2.6, yscale=1.4, font=\small]
+    Zustand        & 1D{INIT} 1D{BER.} 2D{VORLAUF} 5D{LÄUFT} 2D{NACHLAUF} 3D{BEREIT} \\
+    Silo Bottom    & 9H 5L \\
+    Silo Top       & 5L 2H 7L \\
+    Trichter       & 14L \\
+    Not-Aus        & 14H \\
+    M2 Silo voll   & 14L \\
+    M2 Not-Aus     & 14H \\
+    Motor          & 4L 7H 3L \\
+    Druckluft      & 2L 9H 3L \\
+    Lampe rot      & 1H 13L \\
+    Lampe orange   & 4H 5L 5H \\
+    Lampe grün     & 1H 1L 9H 3L \\
+  \extracode
+    \tablerules
+    \vertlines[help lines]{0,1,...,14}
+  \end{tikztimingtable}}
+\end{zeitdiagramm}
+
+\clearpage
+\section{Fehlerfall 1: Not-Aus während der Förderung}
+\label{sec:verlauf-notaus}
+
+Während LÄUFT wird der Not-Aus an Modul~1 gedrückt, das Signal wechselt auf
+low. Motor und Druckluft gehen sofort aus, die rote Lampe leuchtet. Nach dem
+Entriegeln ist das Signal wieder high, und der Ablauf startet erneut über
+BEREIT und VORLAUF.
+
+\begin{zeitdiagramm}{Zeitverlauf bei Not-Aus an Modul~1}{fig:verlauf-notaus}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikztimingtable}[timing/slope=0, xscale=2.6, yscale=1.4, font=\small]
+    Zustand        & 1D{INIT} 1D{BER.} 2D{VORLAUF} 4D{LÄUFT} 3D{STOP} 1D{BER.} 2D{VORLAUF} \\
+    Silo Bottom    & 14H \\
+    Silo Top       & 14L \\
+    Trichter       & 14L \\
+    Not-Aus        & 8H 3L 3H \\
+    M2 Silo voll   & 14L \\
+    M2 Not-Aus     & 14H \\
+    Motor          & 4L 4H 6L \\
+    Druckluft      & 2L 6H 4L 2H \\
+    Lampe rot      & 1H 7L 3H 3L \\
+    Lampe orange   & 4H 7L 3H \\
+    Lampe grün     & 1H 1L 6H 4L 2H \\
+  \extracode
+    \tablerules
+    \vertlines[help lines]{0,1,...,14}
+  \end{tikztimingtable}}
+\end{zeitdiagramm}
+
+\clearpage
+\section{Fehlerfall 2: Trichter voll}
+\label{sec:verlauf-trichter}
+
+Der Trichter am Schlauch meldet \glqq voll\grqq, zum Beispiel weil der Schlauch
+verstopft ist. Die Steuerung geht in STOP, bis der Trichter wieder frei ist.
+
+\begin{zeitdiagramm}{Zeitverlauf bei vollem Trichter}{fig:verlauf-trichter}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikztimingtable}[timing/slope=0, xscale=2.6, yscale=1.4, font=\small]
+    Zustand        & 1D{INIT} 1D{BER.} 2D{VORLAUF} 4D{LÄUFT} 3D{STOP} 1D{BER.} 2D{VORLAUF} \\
+    Silo Bottom    & 14H \\
+    Silo Top       & 14L \\
+    Trichter       & 8L 3H 3L \\
+    Not-Aus        & 14H \\
+    M2 Silo voll   & 14L \\
+    M2 Not-Aus     & 14H \\
+    Motor          & 4L 4H 6L \\
+    Druckluft      & 2L 6H 4L 2H \\
+    Lampe rot      & 1H 7L 3H 3L \\
+    Lampe orange   & 4H 7L 3H \\
+    Lampe grün     & 1H 1L 6H 4L 2H \\
+  \extracode
+    \tablerules
+    \vertlines[help lines]{0,1,...,14}
+  \end{tikztimingtable}}
+\end{zeitdiagramm}
+
+\clearpage
+\section{Fehlerfall 3: Modul 2 meldet Silo voll}
+\label{sec:verlauf-m2-voll}
+
+Während LÄUFT meldet Modul~2 über das Handshake-Topic \texttt{M2\_Silo\_Full},
+dass sein Silo voll ist. Im Gegensatz zu den Fehlerfällen~1 und~2 ist das kein
+Sicherheitsfehler. Modul~1 geht deshalb nicht in STOP, sondern beendet die
+Förderung geregelt: Band und Druckluft laufen 1~s nach, damit der Schlauch leer
+geblasen wird. Danach wartet Modul~1 in BEREIT (orange). Sobald Modul~2 wieder
+Platz meldet, startet der Ablauf neu über VORLAUF.
+
+\begin{zeitdiagramm}{Zeitverlauf bei vollem Silo an Modul~2}{fig:verlauf-m2-voll}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikztimingtable}[timing/slope=0, xscale=2.6, yscale=1.4, font=\small]
+    Zustand        & 1D{INIT} 1D{BER.} 2D{VORLAUF} 2D{LÄUFT} 2D{NACHLAUF} 2D{BEREIT} 2D{VORLAUF} 2D{LÄUFT} \\
+    Silo Bottom    & 14H \\
+    Silo Top       & 14L \\
+    Trichter       & 14L \\
+    Not-Aus        & 14H \\
+    M2 Silo voll   & 6L 4H 4L \\
+    M2 Not-Aus     & 14H \\
+    Motor          & 4L 4H 4L 2H \\
+    Druckluft      & 2L 6H 2L 4H \\
+    Lampe rot      & 1H 13L \\
+    Lampe orange   & 4H 2L 6H 2L \\
+    Lampe grün     & 1H 1L 6H 2L 4H \\
+  \extracode
+    \tablerules
+    \vertlines[help lines]{0,1,...,14}
+  \end{tikztimingtable}}
+\end{zeitdiagramm}

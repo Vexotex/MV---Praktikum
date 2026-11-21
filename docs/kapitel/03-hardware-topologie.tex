@@ -1,0 +1,114 @@
+\chapter{Hardware und Topologie}
+\label{chap:hardware}
+
+% Inhalt laut Vorgabe:
+%  - Sensor-/Aktorliste mit Funktion des Sensors/Aktors
+%  - Topologie des gesamten Systems (inkl. genutzter Protokolle)
+
+\section{Sensoren und Aktoren von Modul 1}
+\label{sec:sensoren-aktoren}
+
+Alle Topics und Standardwerte stammen aus der VPS Simple View
+\cite{vps-simple-view}. Sensoren senden ihren Wert als \abkref{JSON}-Objekt
+\texttt{\{"value":true,"dataType":"Boolean"\}}, Motor und Druckluft werden mit dem Text
+\texttt{true}/\texttt{false} geschaltet (Details in Kapitel~\ref{chap:kommunikation}).
+
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}l l l X@{}}
+    \toprule
+    \textbf{Sensor} & \textbf{Topic} & \textbf{Default} & \textbf{Funktion / Bedeutung von \texttt{true}} \\
+    \midrule
+    Silo Top     & \texttt{.../Top}       & \texttt{true}  & Füllstand oben: Silo ist voll \\
+    Silo Bottom  & \texttt{.../Bottom}    & \texttt{true}  & Füllstand unten: Material vorhanden, Silo nicht leer \\
+    Trichter     & \texttt{.../Funnel}    & \texttt{false} & Trichter am Schlauch ist voll, Förderung muss stoppen \\
+    Not-Aus      & \texttt{.../Emergency} & \texttt{true}  & Not-Aus-Taster ist \emph{nicht} gedrückt (Normalbetrieb) \\
+    \bottomrule
+  \end{tabularx}
+  \caption[Sensoren von Modul~1]{Sensoren von Modul~1, Topic-Präfix \texttt{MV/VPS/Sensors/Delivery/}}
+  \label{tab:sensoren}
+\end{table}
+
+Der Not-Aus ist aus Sicherheitsgründen invertiert ausgelegt: Im Normalbetrieb
+meldet er \texttt{true}, erst \texttt{false} bedeutet \glqq Not-Aus gedrückt\grqq.
+Nach dem Ruhestromprinzip führt so auch ein Drahtbruch am Taster zu \texttt{false}
+und damit zum Stopp.
+
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}l l l X@{}}
+    \toprule
+    \textbf{Aktor} & \textbf{Topic} & \textbf{Typ} & \textbf{Funktion} \\
+    \midrule
+    Förderband (Motor) & \texttt{.../Transport/Actor} & bool & Fördert Mais aus dem Silo in den Trichter. Schaltet die Druckluft automatisch mit ein. \\
+    Druckluft          & \texttt{.../Transport/Air}   & bool & Bläst den Mais durch den Schlauch zu Modul~2 \\
+    Lampen             & \texttt{.../Lamps}           & JSON & Signalsäule rot/orange/grün zur Zustandsanzeige (Kapitel~\ref{chap:signale}) \\
+    \bottomrule
+  \end{tabularx}
+  \caption[Aktoren von Modul~1]{Aktoren von Modul~1, Topic-Präfix \texttt{MV/VPS/Delivery/}}
+  \label{tab:aktoren}
+\end{table}
+
+% Neue Seite: Text, Abbildung und Protokollliste von 3.2 stehen zusammen
+\clearpage
+\section{Topologie}
+\label{sec:topologie}
+
+Abbildung~\ref{fig:topologie} zeigt die Kommunikationswege. Die Python-Steuerung
+und die Modellanlage tauschen keine Daten direkt aus. Beide sind Clients des
+MQTT-Brokers, der die Nachrichten anhand der Topics weiterleitet
+\cite{mqtt311}.
+
+% [H]: Abbildung direkt unter dem Text, nicht allein auf einer Float-Seite
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+      kasten/.style={draw, rounded corners=4pt, align=center, font=\small,
+                     minimum height=1.0cm, inner sep=5pt},
+      gruppe/.style={draw, dashed, rounded corners=6pt, inner sep=8pt},
+      verbindung/.style={{Stealth[length=2.2mm]}-{Stealth[length=2.2mm]}, thick},
+      prot/.style={font=\scriptsize, align=center},
+      node distance=0.5cm
+    ]
+    % Steuerungs-PC
+    \node[kasten, minimum width=3.4cm] (m1) {\texttt{storage.py}\\ Modul 1};
+    \node[kasten, minimum width=3.4cm, below=of m1] (m2) {\texttt{delivery.py}\\ Modul 2};
+    \node[gruppe, fit=(m1)(m2), label={[font=\small\bfseries]above:Steuerungs-PC}] (pc) {};
+    \node[font=\scriptsize, below=0.1cm of pc] {Python 3.12, paho-mqtt 2.1};
+
+    % Broker
+    \node[kasten, fill=gray!10, minimum width=3.6cm, minimum height=1.6cm, right=2.0cm of pc]
+      (broker) {\textbf{MQTT-Broker}\\ \texttt{dover.init.th-owl.de}\\ Port 1884};
+
+    % Anlage
+    \node[kasten, minimum width=3.0cm, right=2.0cm of broker, yshift=1.35cm] (vm1) {M1 Delivery};
+    \node[kasten, minimum width=3.0cm, below=0.25cm of vm1] (vm2) {M2 Storage};
+    \node[kasten, minimum width=3.0cm, below=0.25cm of vm2] (vm3) {M3 Dosing};
+    \node[kasten, minimum width=3.0cm, below=0.25cm of vm3] (vm4) {M4 Production};
+    \node[gruppe, fit=(vm1)(vm4), label={[font=\small\bfseries]above:Modellanlage (VPS)}] (vps) {};
+
+    \draw[verbindung] (pc) -- node[prot, above] {MQTT 3.1.1}
+                             node[prot, below] {TCP/IP} (broker);
+    \draw[verbindung] (broker) -- node[prot, above] {MQTT}
+                                 node[prot, below] {TCP/IP} (vps);
+
+    % Weitere Gruppen
+    \node[kasten, dashed, below=1.3cm of broker, minimum width=3.6cm] (andere)
+      {Steuerungen M3/M4\\ (andere Gruppen)};
+    \draw[verbindung, dashed] (andere) -- (broker);
+  \end{tikzpicture}
+  \caption{Topologie des Gesamtsystems mit den genutzten Protokollen}
+  \label{fig:topologie}
+\end{figure}
+
+\begin{itemize}
+  \item \textbf{Transport:} \abkref{TCP}/\abkref{IP} über das Hochschulnetz,
+        Broker-Port 1884.
+  \item \textbf{Anwendungsprotokoll:} MQTT 3.1.1 mit Benutzername und Passwort,
+        \abkref{QoS}~0, Publish/Subscribe über Topics.
+  \item \textbf{Nutzdaten:} Text \texttt{true}/\texttt{false} bzw. \abkref{JSON}
+        \cite{rfc8259}.
+\end{itemize}
+

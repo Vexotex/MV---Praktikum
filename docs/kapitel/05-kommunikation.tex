@@ -1,0 +1,89 @@
+\chapter{Kommunikation zu den Nachbarstationen}
+\label{chap:kommunikation}
+
+% Inhalt laut Vorgabe:
+%  - Dokumentation der MQTT-Topics zur Kommunikation mit den Nachbarstationen
+%  - inkl. JSON-Format
+
+Modul~1 hat nur einen Nachbarn, und zwar Modul~2 (Storage), das den geförderten Mais
+aufnimmt. Damit Modul~1 nicht in ein volles Lager fördert und bei einem Not-Aus an
+Modul~2 stoppt, tauschen beide Module Signale über eigene Topics unterhalb von
+\texttt{MV/VPS/DeliveryStorage/} aus. Diese Topics gehören nicht zur
+Standardbelegung der Anlage, sondern wurden für die Kopplung angelegt.
+
+\section{Topics}
+
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}l l l X@{}}
+    \toprule
+    \textbf{Topic} & \textbf{Richtung} & \textbf{Default} & \textbf{Bedeutung von \texttt{true}} \\
+    \midrule
+    \texttt{.../M2\_Silo\_Full}  & M2 $\rightarrow$ M1 & \texttt{false} & Silo von Modul~2 ist voll, Modul~1 darf nicht fördern \\
+    \texttt{.../M2\_Emergency}   & M2 $\rightarrow$ M1 & \texttt{true}  & Not-Aus an Modul~2 ist \emph{nicht} gedrückt \\
+    \bottomrule
+  \end{tabularx}
+  \caption[Handshake-Topics zwischen Modul~1 und Modul~2]{Handshake-Topics zwischen Modul~1 und Modul~2, Topic-Präfix \texttt{MV/VPS/DeliveryStorage/}}
+  \label{tab:handshake}
+\end{table}
+
+Der Default gilt, solange Modul~1 noch keine Nachricht empfangen hat.
+\texttt{M2\_Emergency} folgt derselben Logik wie der eigene Not-Aus
+(Kapitel~\ref{sec:sensoren-aktoren}): Modul~2 leitet den Wert seines
+Not-Aus-Sensors unverändert weiter, \texttt{true} heißt also \glqq kein Not-Aus\grqq.
+Mit dem Default \texttt{true} fördert Modul~1 deshalb auch, solange von
+Modul~2 noch keine Nachricht vorliegt. Beide Topics werdem mit \abkref{QoS}~0 publiziert.
+
+\section{Sendezeitpunkt}
+
+Die Kommunikation läuft nur in eine Richtung: Modul~2 sendet, Modul~1 liest. 
+Handshakes von Modul~2 sind weitergeleitete Signale der eigenen Sensoren:
+
+% raggedright: verhindert große Wortabstände wegen der langen Topic-Namen
+\begin{itemize}[before=\raggedright]
+  \item Trifft eine Nachricht von Silo Top an Modul~2 ein
+        (\texttt{.../Sensors/Storage/Top}), sendet Modul~2 \texttt{M2\_Silo\_Full}.
+  \item Trifft eine Nachricht vom Not-Aus an Modul~2 ein
+        (\texttt{.../Sensors/Storage/Emergency}), sendet Modul~2 \texttt{M2\_Emergency}.
+\end{itemize}
+
+\section{Nachrichtenformat}
+
+Die Handshake-Signale verwenden dasselbe \abkref{JSON}-Format wie die
+Sensoren der Anlage: ein Objekt mit dem Wahrheitswert im Feld \texttt{value}
+und dem Datentyp im Feld \texttt{dataType}. Modul~1 wertet nur \texttt{value}
+aus, weitere Felder werden ignoriert.
+
+\begin{lstlisting}[language=json, caption={Payload eines Handshake-Signals}, label={lst:handshake}]
+{"value":true,"dataType":"Boolean"}
+\end{lstlisting}
+
+Zum Vergleich die Formate der eigenen Aktoren von Modul~1. Die Lampen erhalten
+ein JSON-Objekt mit genau den drei Schlüsseln \texttt{Red}, \texttt{Orange}
+und \texttt{Green}:
+
+\begin{lstlisting}[language=json, caption={Payload der Lampen (Topic MV/VPS/Delivery/Lamps)}, label={lst:lampen}]
+{"Red": false, "Orange": true, "Green": false}
+\end{lstlisting}
+
+Motor und Druckluft werden nicht mit JSON, sondern mit dem reinen Text
+\texttt{true} bzw. \texttt{false} geschaltet (Topics \texttt{.../Transport/Actor}
+und \texttt{.../Transport/Air}, Präfix \texttt{MV/VPS/Delivery/}). Alle Befehle von
+Modul~1 werden ebenfalls mit QoS~0 gesendet.
+
+\section{Abonnements von Modul 1}
+
+\begin{itemize}
+  \item \texttt{MV/VPS/Sensors/Delivery/\*} -- alle eigenen Sensoren
+  \item \texttt{MV/VPS/DeliveryStorage/M2\_Silo\_Full}
+  \item \texttt{MV/VPS/DeliveryStorage/M2\_Emergency}
+\end{itemize}
+
+\section{Publizierte Topics von Modul 1}
+
+\begin{itemize}
+  \item \texttt{MV/VPS/Delivery/Transport/Actor} -- Förderband (Motor)
+  \item \texttt{MV/VPS/Delivery/Transport/Air} -- Druckluft
+  \item \texttt{MV/VPS/Delivery/Lamps} -- Lampen rot, orange, grün
+\end{itemize}

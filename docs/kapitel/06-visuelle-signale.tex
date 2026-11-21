@@ -1,0 +1,33 @@
+\chapter{Visuelle Signale}
+\label{chap:signale}
+
+% Inhalt laut Vorgabe:
+%  - Dokumentation der visuellen Signale mit Bedeutung
+
+Modul~1 zeigt seinen Zustand über eine Signalsäule mit drei Lampen an
+(rot, orange, grün). Die Lampen werden beim Zustandswechsel über das Topic
+\texttt{MV/VPS/Delivery/Lamps} gesetzt.
+
+\begin{table}[htbp]
+  \centering
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabularx}{\textwidth}{@{}l c c c X@{}}
+    \toprule
+    \textbf{Zustand} & \textbf{Rot} & \textbf{Orange} & \textbf{Grün} & \textbf{Bedeutung für den Bediener} \\
+    \midrule
+    INIT     & \lampe{lamperot}{1} & \lampe{lampeorange}{1} & \lampe{lampegruen}{1} & Lampentest beim Start \\
+    BEREIT   & \lampe{lamperot}{0} & \lampe{lampeorange}{1} & \lampe{lampegruen}{0} & Wartet auf Material im Silo bzw. Freigabe von Modul~2 \\
+    VORLAUF  & \lampe{lamperot}{0} & \lampe{lampeorange}{1} & \lampe{lampegruen}{1} & Druckluft läuft vor, Förderband startet gleich \\
+    LÄUFT    & \lampe{lamperot}{0} & \lampe{lampeorange}{0} & \lampe{lampegruen}{1} & Normale Förderung \\
+    NACHLAUF & \lampe{lamperot}{0} & \lampe{lampeorange}{1} & \lampe{lampegruen}{1} & Förderung endet, Band und Luft laufen aus \\
+    STOP     & \lampe{lamperot}{1} & \lampe{lampeorange}{0} & \lampe{lampegruen}{0} & Sicherheitsstopp: Not-Aus (M1 oder M2) oder Trichter voll \\
+    \bottomrule
+  \end{tabularx}
+  \caption[Lampenzustände von Modul~1 und ihre Bedeutung]{Lampenzustände von Modul~1 und ihre Bedeutung
+    (\protect\lampe{gray}{1}~an, \protect\lampe{gray}{0}~aus)}
+  \label{tab:lampen}
+\end{table}
+
+VORLAUF und NACHLAUF zeigen dasselbe Lampenbild, weil in beiden Fällen
+Druckluft und gegebenenfalls das Band laufen, aber keine reguläre Förderung
+stattfindet.

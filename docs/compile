@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Baut docs/main.pdf.
+#   ./compile                 bauen
+#   ./compile abgabe=true     bauen mit Abgabe-Dateinamen (Datum_MV-Praktikum_Delivery.pdf)
+#   ./compile clean           Hilfsdateien löschen
+#   ./compile rebuild         clean + bauen
+# Nutzt lokales latexmk/pdflatex, sonst Docker (Image texlive/texlive).
+
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+: "${IMAGE:=texlive/texlive:latest}"
+: "${ABGABE:=false}"
+COMMAND="build"
+
+for arg in "$@"; do
+	case "$arg" in
+		build|clean|rebuild) COMMAND="$arg" ;;
+		abgabe=true)  ABGABE=true ;;
+		abgabe=false) ABGABE=false ;;
+		*)
+			echo "Unbekannter Parameter: $arg" >&2
+			echo "Benutzung: ./compile [build|clean|rebuild] [abgabe=true]" >&2
+			exit 1
+			;;
+	esac
+done
+
+JOBNAME="main"
+if [ "$ABGABE" = "true" ]; then
+	JOBNAME="$(date +%F)_MV-Praktikum_Delivery"
+fi
+
+LATEXMK_ARGS=(-pdf -jobname="$JOBNAME" -interaction=nonstopmode -halt-on-error main.tex)
+
+docker_laeuft () {
+	command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1
+}
+
+clean () {
+	rm -f ./*.aux ./*.log ./*.out ./*.toc ./*.lof ./*.lot ./*.fls ./*.fdb_latexmk \
+	      ./*.blg ./*.bbl ./*.synctex.gz kapitel/*.aux
+}
+
+build () {
+	if command -v latexmk >/dev/null 2>&1; then
+		latexmk "${LATEXMK_ARGS[@]}"
+	elif command -v pdflatex >/dev/null 2>&1; then
+		pdflatex -jobname="$JOBNAME" -interaction=nonstopmode -halt-on-error main.tex
+		pdflatex -jobname="$JOBNAME" -interaction=nonstopmode -halt-on-error main.tex
+	elif docker_laeuft; then
+		docker run --rm -v "$(pwd):/workdir" -w /workdir "$IMAGE" latexmk "${LATEXMK_ARGS[@]}"
+	else
+		echo "Weder LaTeX (latexmk/pdflatex) noch ein laufender Docker-Daemon gefunden." >&2
+		echo "Installieren: brew install --cask mactex-no-gui   oder Docker/Colima starten." >&2
+		exit 1
+	fi
+	clean
+	ls -lh "$JOBNAME.pdf"
+}
+
+case "$COMMAND" in
+	build)   build ;;
+	clean)   clean ;;
+	rebuild) clean; rm -f ./*.pdf; build ;;
+esac
