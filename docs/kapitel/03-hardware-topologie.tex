@@ -73,8 +73,8 @@ MQTT-Brokers, der die Nachrichten anhand der Topics weiterleitet
       node distance=0.5cm
     ]
     % Steuerungs-PC
-    \node[kasten, minimum width=3.4cm] (m1) {\texttt{storage.py}\\ Modul 1};
-    \node[kasten, minimum width=3.4cm, below=of m1] (m2) {\texttt{delivery.py}\\ Modul 2};
+    \node[kasten, minimum width=3.4cm] (m1) {\texttt{delivery.py}\\ Modul 1};
+    \node[kasten, minimum width=3.4cm, below=of m1] (m2) {\texttt{storage.py}\\ Modul 2};
     \node[gruppe, fit=(m1)(m2), label={[font=\small\bfseries]above:Steuerungs-PC}] (pc) {};
     \node[font=\scriptsize, below=0.1cm of pc] {Python 3.12, paho-mqtt 2.1};
 

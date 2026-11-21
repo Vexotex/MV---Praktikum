@@ -1,0 +1,17 @@
+1. blinkende Lichter
+z.B. blinkendes Licht bei STOP
+
+2. Topic "DeliveryStorage"
+nicht stumpf Sensorsignale weiterleiten sondern nur senden falls aktuelles
+Signal nicht dem Default entspricht
+ok, bisschen unnötig
+
+3. vernünftiges Logging
+Logging Wrapper mit Timestamps etc.
+
+4. Absturz handling
+aktuell würde der Broker weiter Motor/Druckluft true senden wenn Client 
+Verbindung abbricht
+
+5. Zugangsdaten aus dem Repo nehmen ^^
+
